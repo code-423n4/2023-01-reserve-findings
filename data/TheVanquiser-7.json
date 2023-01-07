@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "TheVanquiser",
+  "risk": "3",
+  "title": "Arbitrary from in transferFrom",
+  "issueId": 7,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/7"
+}
