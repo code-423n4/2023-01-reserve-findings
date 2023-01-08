@@ -48,8 +48,21 @@ Note: valid only for solidity versions `<0.6.9`
 
 ### Findings
 ```
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/ERC20.sol#L188 =>     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) { || pragma solidity ^0.6.0;
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/WETH.sol#L59 =>     function transfer(address dst, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/ERC20.sol
+::66 =>     function name() public view returns (string memory) { || pragma solidity ^0.6.0;
+::74 =>     function symbol() public view returns (string memory) { || pragma solidity ^0.6.0;
+::91 =>     function decimals() public view returns (uint8) { || pragma solidity ^0.6.0;
+::98 =>     function totalSupply() public view override returns (uint256) { || pragma solidity ^0.6.0;
+::105 =>     function balanceOf(address account) public view override returns (uint256) { || pragma solidity ^0.6.0;
+::117 =>     function transfer(address recipient, uint256 amount) public virtual override returns (bool) { || pragma solidity ^0.6.0;
+::142 =>     function approve(address spender, uint256 amount) public virtual override returns (bool) { || pragma solidity ^0.6.0;
+::188 =>     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) { || pragma solidity ^0.6.0;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/WETH.sol
+::37 =>     function deposit() public payable { || pragma solidity >=0.4.22 <0.6;
+::42 =>     function withdraw(uint256 wad) public { || pragma solidity >=0.4.22 <0.6;
+::49 =>     function totalSupply() public view returns (uint256) { || pragma solidity >=0.4.22 <0.6;
+::53 =>     function approve(address guy, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
+::59 =>     function transfer(address dst, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
 ```
 
 ### Resources
