@@ -48,8 +48,8 @@ Note: valid only for solidity versions `<0.6.9`
 
 ### Findings
 ```
-reserve/protocol/contracts/plugins/aave/ERC20.sol::188 =>     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) { || pragma solidity ^0.6.0;
-reserve/protocol/contracts/plugins/mocks/WETH.sol::59 =>     function transfer(address dst, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/ERC20.sol#L188 =>     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) { || pragma solidity ^0.6.0;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/WETH.sol#L59 =>     function transfer(address dst, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
 ```
 
 ### Resources
