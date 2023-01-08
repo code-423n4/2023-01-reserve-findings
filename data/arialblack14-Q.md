@@ -92,23 +92,8 @@ You should add descriptive messages.
 |protocol/contracts/plugins/mocks/InvalidChainlinkMock.sol#L32|[revert(); // Revert with no reason](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/InvalidChainlinkMock.sol#L32 )|
 ---
 
-## [N-2] Consider adding checks for signature malleability.
 
-### Description
-Consider adding checks for signature malleability
-
-### ✅ Recommendation
-Use OpenZeppelin's ECDSA contract rather than calling ecrecover() directly
-
-### 🔍 Findings:
-| | |
-|---|---|
-|protocol/contracts/plugins/aave/StaticATokenLM.sol#L155|[require(owner == ecrecover(digest, v, r, s), StaticATokenErrors.INVALID_SIGNATURE);](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L155 )|
-|protocol/contracts/plugins/aave/StaticATokenLM.sol#L193|[depositor == ecrecover(digest, sigParams.v, sigParams.r, sigParams.s),](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L193 )|
-|protocol/contracts/plugins/aave/StaticATokenLM.sol#L234|[owner == ecrecover(digest, sigParams.v, sigParams.r, sigParams.s),](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L234 )|
----
-
-## [N-3] For modern and more readable code, update import usages.
+## [N-2] For modern and more readable code, update import usages.
 
 ### Description
 Solidity code is cleaner in the following way: On the principle that clearer code is better code, you should import the things you want to use. Specific imports with curly braces allow us to apply this rule better. Check out this [article](https://betterprogramming.pub/solidity-tutorial-all-about-imports-c65110e41f3a)
@@ -121,7 +106,7 @@ All import statements
 
 ---
 
-## [N-4] Compliance with solidity styler rules in `constant` expressions.
+## [N-3] Compliance with solidity styler rules in `constant` expressions.
 
 ### Description
 Variables declared as constant utilize the UPPER_CASE_WITH_UNDERSCORES format..
