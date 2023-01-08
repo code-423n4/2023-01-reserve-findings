@@ -35,3 +35,24 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 ### References
 - [G008 - Use Shift Right/Left instead of Division/Multiplication if possible](https://github.com/byterocket/c4-common-issues/blob/main/0-Gas-Optimizations.md#g008---use-shift-rightleft-instead-of-divisionmultiplication-if-possible)
 - [EVM Opcodes](https://www.evm.codes/)
+
+
+
+## Make function external instead of public
+
+### Description
+
+Version 0.6.9 removed the restriction on public functions accepting calldata arguments. Public functions for Solidity versions 0.6.9 have to transfer the parameters to memory.
+
+### Findings
+```
+reserve/protocol/contracts/plugins/aave/ERC20.sol::188 =>     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) { || pragma solidity ^0.6.0;
+reserve/protocol/contracts/plugins/mocks/WETH.sol::59 =>     function transfer(address dst, uint256 wad) public returns (bool) { || pragma solidity >=0.4.22 <0.6;
+```
+
+### Resources
+
+- [G009 - Make Function external instead of public](https://github.com/byterocket/c4-common-issues/blob/main/0-Gas-Optimizations.md/#g009---make-function-external-instead-of-public)
+- [StackOverflow answer re `solc >=0.6.9`](https://ethereum.stackexchange.com/questions/107578/does-using-external-over-public-in-a-library-reduce-any-gas-costs/107939#107939)
+- [Public vs External Functions in Solidity | Gustavo (Gus) Guimaraes post](https://gus-tavo-guim.medium.com/public-vs-external-functions-in-solidity-b46bcf0ba3ac)
+- [StackOverflow answer](https://ethereum.stackexchange.com/questions/19380/external-vs-public-best-practices?answertab=active#tab-top)
