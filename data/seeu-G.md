@@ -1,11 +1,12 @@
-## Cache array length outside of loop
+## [G-01] Cache array length outside of loop
 
 ### Description
 If the array's length is not changed during a loop, caching it outside the loop saves reading it on each iteration
 
 ### Findings
 ```
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L523 => while (_targetNames.length() > 0) _targetNames.remove(_targetNames.at(0));
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol
+::523 => while (_targetNames.length() > 0) _targetNames.remove(_targetNames.at(0));
 ```
 
 ### References
@@ -15,7 +16,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 
 
-## Missing implementation Shift Right/Left for division and multiplication
+## [G-02] Missing implementation Shift Right/Left for division and multiplication
 
 ### Description
 
@@ -24,12 +25,15 @@ The `SHR` opcode only utilizes 3 gas, compared to the 5 gas used by the `DIV` op
 ### Findings
 
 ```
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L372 => uint256 shiftDelta = rawDelta + (FIX_ONE / 2);
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L427 => return (FIX_SCALE_SQ + (stakeRate / 2)) / stakeRate; // ROUND method
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L453 => test = (left + right) / 2; // left < test < right because left < right - 1
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L816 => require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L824 => require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol#L430 => return (a / 2) + (b / 2) + (((a % 2) + (b % 2)) / 2);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol
+::372 => uint256 shiftDelta = rawDelta + (FIX_ONE / 2);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol
+::427 => return (FIX_SCALE_SQ + (stakeRate / 2)) / stakeRate; // ROUND method
+::453 => test = (left + right) / 2; // left < test < right because left < right - 1
+::816 => require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+::824 => require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol
+::430 => return (a / 2) + (b / 2) + (((a % 2) + (b % 2)) / 2);
 ```
 
 ### References
@@ -38,7 +42,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 
 
-## Make function external instead of public
+## [G-03] Make function external instead of public
 
 ### Description
 
@@ -70,3 +74,34 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 - [G009 - Make Function external instead of public](https://github.com/byterocket/c4-common-issues/blob/main/0-Gas-Optimizations.md/#g009---make-function-external-instead-of-public)
 - [Public vs External Functions in Solidity | Gustavo (Gus) Guimaraes post](https://gus-tavo-guim.medium.com/public-vs-external-functions-in-solidity-b46bcf0ba3ac)
 - [StackOverflow answer](https://ethereum.stackexchange.com/questions/19380/external-vs-public-best-practices?answertab=active#tab-top)
+
+
+
+## [G-04] Using bools for storage incurs overhead
+
+### Description
+
+Use uint256 for true/false to avoid a Gwarmaccess (100 gas), and to avoid Gsset (20000 gas) when changing from ‘false’ to ‘true’, after having been ‘true’ in the past.
+
+### Findings
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IGnosis.sol
+::17 =>     bool minFundingThresholdNotReached;
+::18 =>     bool isAtomicClosureAllowed;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol
+::93 =>     bool isRSR = erc20 == rsr; // if false: isRToken
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol
+::500 =>    bool allZero = true;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol
+::107 =>    bool minFundingThresholdNotReached;
+::108 =>    bool isAtomicClosureAllowed;
+::319 =>    bool success = sellOrders[auctionId].removeKeepHistory(_sellOrders[i]);
+::523 =>    bool minFundingThresholdNotReached = auctionData[auctionId].minFundingThresholdNotReached;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol
+::321 =>    bool result = removeKeepHistory(self, elementToRemove);
+```
+
+### References
+
+- [[GAS-1] Using bools for storage incurs overhead](https://gist.github.com/Picodes/ab2df52379e4b4993709be1b91aab651#gas-1-using-bools-for-storage-incurs-overhead)
+- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/58f635312aa21f947cae5f8578638a85aa2519f5/contracts/security/ReentrancyGuard.sol#L23-L27)
