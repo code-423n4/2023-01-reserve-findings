@@ -117,7 +117,6 @@ TODO: Conform to the style guide
 ### 🔍 Findings:
 | | |
 |---|---|
-|protocol/contracts/interfaces/IBasketHandler.sol#L11|[* @notice The BasketHandler aims to maintain a reference basket of constant target unit amounts.](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IBasketHandler.sol#L11 )|
 |protocol/contracts/p1/StRSR.sol#L45|[uint8 public constant decimals = 18;](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L45 )|
 |protocol/contracts/p1/StRSR.sol#L126|[bytes32 private constant _PERMIT_TYPEHASH =](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L126 )|
 |protocol/contracts/p1/StRSRVotes.sol#L27|[bytes32 private constant _DELEGATE_TYPEHASH =](https://github.com/reserve-protocol/protocol/tree/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSRVotes.sol#L27 )|
