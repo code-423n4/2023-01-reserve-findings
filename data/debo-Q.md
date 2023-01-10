@@ -262,3 +262,124 @@ Remediation
 // Add visibility e.g., internal
 function divFix(uint256 x, uint192 y) internal pure returns (uint192) {
 ```
+
+## [L-8]
+```
+SWC-100 Function Default Visibility 
+```
+
+URL
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L129-L174
+```
+
+Case 
+```
+Check for functions that do not have the visibility set with a value i.e., public, internal, and external.
+```
+
+Description
+```
+Functions that do not have a function visibility type specified are public by default. This could lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.
+```
+
+PoC
+```
+function divuu(uint256 x, uint256 y) pure returns (uint192) {
+    return _safeWrap(mulDiv256(FIX_SCALE, x, y));
+}
+
+/// @return min(x,y)
+// as-ints: min(x,y)
+function fixMin(uint192 x, uint192 y) pure returns (uint192) {
+    return x < y ? x : y;
+}
+
+/// @return max(x,y)
+// as-ints: max(x,y)
+function fixMax(uint192 x, uint192 y) pure returns (uint192) {
+    return x > y ? x : y;
+}
+
+/// @return absoluteValue(x,y)
+// as-ints: absoluteValue(x,y)
+function abs(int256 x) pure returns (uint256) {
+    return x < 0 ? uint256(-x) : uint256(x);
+}
+
+/// Divide two uints, returning a uint, using rounding mode `rounding`.
+/// @return numerator / divisor
+// as-ints: numerator / divisor
+function _divrnd(
+    uint256 numerator,
+    uint256 divisor,
+    RoundingMode rounding
+) pure returns (uint256) {
+    uint256 result = numerator / divisor;
+
+    if (rounding == FLOOR) return result;
+
+    if (rounding == ROUND) {
+        if (numerator % divisor > (divisor - 1) / 2) {
+            result++;
+        }
+    } else {
+        if (numerator % divisor > 0) {
+            result++;
+        }
+    }
+
+    return result;
+}
+```
+
+Remediation
+```
+// Add visibility e.g., internal
+function divuu(uint256 x, uint256 y) pure returns (uint192) {
+    return _safeWrap(mulDiv256(FIX_SCALE, x, y));
+}
+
+/// @return min(x,y)
+// as-ints: min(x,y)
+function fixMin(uint192 x, uint192 y) internal pure returns (uint192) {
+    return x < y ? x : y;
+}
+
+/// @return max(x,y)
+// as-ints: max(x,y)
+function fixMax(uint192 x, uint192 y) internal pure returns (uint192) {
+    return x > y ? x : y;
+}
+
+/// @return absoluteValue(x,y)
+// as-ints: absoluteValue(x,y)
+function abs(int256 x) internal pure returns (uint256) {
+    return x < 0 ? uint256(-x) : uint256(x);
+}
+
+/// Divide two uints, returning a uint, using rounding mode `rounding`.
+/// @return numerator / divisor
+// as-ints: numerator / divisor
+function _divrnd(
+    uint256 numerator,
+    uint256 divisor,
+    RoundingMode rounding
+) internal pure returns (uint256) {
+    uint256 result = numerator / divisor;
+
+    if (rounding == FLOOR) return result;
+
+    if (rounding == ROUND) {
+        if (numerator % divisor > (divisor - 1) / 2) {
+            result++;
+        }
+    } else {
+        if (numerator % divisor > 0) {
+            result++;
+        }
+    }
+
+    return result;
+}
+```
