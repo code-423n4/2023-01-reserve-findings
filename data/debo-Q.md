@@ -160,3 +160,34 @@ function shiftl_toFix(
     RoundingMode rounding
 ) internal pure returns (uint192) {
 ```
+
+## [L-06]
+```
+SWC-108 State Variable Default Visibility
+```
+
+URL
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L33
+```
+
+Case 
+```
+Check for variables that do not have the visibility set with a value i.e., public, internal, and external.
+```
+
+Description
+```
+Labeling the visibility explicitly makes it easier to catch incorrect assumptions about who can access the variable.
+```
+
+PoC
+```
+bytes32 constant UIntOutofBoundsHash = keccak256(abi.encodeWithSignature("UIntOutOfBounds()"));
+```
+
+Remediation
+```
+// Add visibility e.g., public
+bytes32 public constant UIntOutofBoundsHash = keccak256(abi.encodeWithSignature("UIntOutOfBounds()"));
+```
