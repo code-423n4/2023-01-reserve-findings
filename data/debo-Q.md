@@ -231,3 +231,34 @@ uint192 public constant FIX_ONE = FIX_SCALE; // The uint192 representation of on
 uint192 public constant FIX_MAX = type(uint192).max; // The largest uint192. (Not an integer!)
 uint192 public constant FIX_MIN = 0; // The smallest uint192.
 ```
+
+## [L-07]
+```
+SWC-100 Function Default Visibility 
+```
+
+URL
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L116
+```
+
+Case 
+```
+Check for functions that do not have the visibility set with a value i.e., public, internal, and external.
+```
+
+Description
+```
+Functions that do not have a function visibility type specified are public by default. This could lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.
+```
+
+PoC
+```
+function divFix(uint256 x, uint192 y) pure returns (uint192) {
+```
+
+Remediation
+```
+// Add visibility e.g., internal
+function divFix(uint256 x, uint192 y) internal pure returns (uint192) {
+```
