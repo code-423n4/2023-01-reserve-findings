@@ -121,3 +121,42 @@ Remediation
 // Add visibility e.g., internal
 function shiftl_toFix(uint256 x, int8 shiftLeft) internal pure returns (uint192) {
 ```
+
+## [L-05]
+```
+SWC-100 Function Default Visibility 
+```
+
+URL
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L94-L98
+```
+
+Case 
+```
+Check for functions that do not have the visibility set with a value i.e., public, internal, and external.
+```
+
+Description
+```
+Functions that do not have a function visibility type specified are public by default. This could lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.
+```
+
+PoC
+```
+function shiftl_toFix(
+    uint256 x,
+    int8 shiftLeft,
+    RoundingMode rounding
+) pure returns (uint192) {
+```
+
+Remediation
+```
+// Add visibility e.g., internal
+function shiftl_toFix(
+    uint256 x,
+    int8 shiftLeft,
+    RoundingMode rounding
+) internal pure returns (uint192) {
+```
