@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "2",
+  "title": "Multiple Vulnerabilities in 'AssetRegistry' Smart Contract. Registering & Swapping Assets, Manipulating Basket, High Gas Consumption, Unupdateable Initial State.",
+  "issueId": 40,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/40"
+}
