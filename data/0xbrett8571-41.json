@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "Multiple Security Vulnerabilities in \"Deployer.sol\" Smart Contract leading to unauthorized contract deployments, stolen assets, and unexpected behaviors",
+  "issueId": 41,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/41"
+}
