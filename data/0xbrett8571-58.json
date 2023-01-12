@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "Vulnerabilities in contract 'RevenueTraderP1' leading to loss of funds, contract getting stuck and unauthorized access to the contract's assets.",
+  "issueId": 58,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/58"
+}
