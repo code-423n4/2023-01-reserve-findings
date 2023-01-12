@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "(P1) \"RToken\" Unauthorized Minting and Frontrunning Attack in Smart Contract's Mint Function, Impacting Token's Exchange Rate and Security",
+  "issueId": 53,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/53"
+}
