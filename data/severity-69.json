@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "severity",
+  "risk": "3",
+  "title": "Unlimited allowance to pool address could result in theft of funds",
+  "issueId": 69,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/69"
+}
