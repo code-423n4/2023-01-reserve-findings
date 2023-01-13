@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "jah",
+  "risk": "2",
+  "title": "Maximum backup collateral in a basket is not checked properly ",
+  "issueId": 60,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/60"
+}
