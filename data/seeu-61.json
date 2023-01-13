@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "seeu",
+  "risk": "2",
+  "title": "Timestamp dependency, block.timestamp is vulnerable to manipulation",
+  "issueId": 61,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/61"
+}
