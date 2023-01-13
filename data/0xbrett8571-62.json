@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "\"Interfaces(IAsset.sol)\" High Impact Reentrancy and Fallback Function Vulnerabilities in IAsset and ICollateral Interfaces.",
+  "issueId": 62,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/62"
+}
