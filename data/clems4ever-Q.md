@@ -1,2 +1,0 @@
-AssetRegistryP1 is initilizable and anybody can call the init() method. The call to init must be in the same transaction that creates the contract or a control must be implemented on who can call the init function.
-https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/AssetRegistry.sol#L34
