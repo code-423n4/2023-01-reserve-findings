@@ -105,3 +105,49 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 - [[GAS-1] Using bools for storage incurs overhead](https://gist.github.com/Picodes/ab2df52379e4b4993709be1b91aab651#gas-1-using-bools-for-storage-incurs-overhead)
 - [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/58f635312aa21f947cae5f8578638a85aa2519f5/contracts/security/ReentrancyGuard.sol#L23-L27)
+
+
+## [G-05] Use "require" instead of "assert" when possible
+
+If `assert()` returns a false assertion, it compiles to the invalid opcode `0xfe`, which eats up all the gas left and completely undoes the changes. `require()` compiles to `0xfd`, which is the opcode for a `REVERT`, indicating that it will return the remaining gas if it returns a false assertion.
+
+### Findings
+
+```Solidity
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol
+::249 =>         assert(tradesOpen == 0 && !basketHandler.fullyCollateralized());
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol
+::556 =>             assert(targetIndex < targetsLength);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol
+::696 =>         assert(totalStakes + amount < type(uint224).max);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol
+::110 =>         assert(doTrade);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RewardableLib.sol
+::78 =>                 assert(erc20s[i].balanceOf(address(this)) >= liabilities[erc20s[i]]);
+::102 =>             assert(erc20.balanceOf(address(this)) >= liabilities[erc20]);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/TradeLib.sol
+::44 =>         assert(trade.buyPrice > 0 && trade.buyPrice < FIX_MAX && trade.sellPrice < FIX_MAX);
+::108 =>         assert(
+::168 =>             assert(errorCode == 0x11 || errorCode == 0x12);
+::170 =>             assert(keccak256(reason) == UIntOutofBoundsHash);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol
+::114 =>         assert(address(trades[sell]) == address(0));
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol
+::345 =>             assert(amt == amountToWithdraw);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol
+::98 =>                 assert(low == 0);
+::112 =>             assert(low <= high);
+::147 =>         assert(lotLow <= lotHigh);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol
+::137 =>                 assert(low == 0);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/RTokenAsset.sol
+::74 =>             assert(low <= high);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol
+::63 =>         assert(status == TradeStatus.PENDING);
+::98 =>         assert(origin_ != address(0));
+::182 =>             assert(isAuctionCleared());
+```
+
+### Reference
+
+- [Assert() vs Require() in Solidity – Key Difference & What to Use](https://codedamn.com/news/solidity/assert-vs-require-in-solidity)
