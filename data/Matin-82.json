@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "Matin",
+  "risk": "3",
+  "title": "delegateBySig() allows user to vote to address(0), which causes the user to permanently lose his vote and assets",
+  "issueId": 82,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/82"
+}
