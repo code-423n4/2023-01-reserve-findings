@@ -19,23 +19,8 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 - [4.6 Unspecific compiler version pragma | Consensys Audit of 1inch Liquidity Protocol](https://consensys.net/diligence/audits/2020/12/1inch-liquidity-protocol/#unspecific-compiler-version-pragma)
 
 
-## [L-02] Unsafe ERC20 operation: _mint
 
-### Description
-
-`_SafeMint` is a better option than the `_mint` function, as it helps to prevent unauthorized token minting.
-
-### Findings
-
-- [contracts/p1/StRSRVotes.sol#L138](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSRVotes.sol#L138) => `super._mint(account, amount);`
-
-### Resources
-
-- [_mint](https://docs.openzeppelin.com/contracts/2.x/api/token/erc721#ERC721-_mint-address-uint256-) vs [_safeMint](https://docs.openzeppelin.com/contracts/2.x/api/token/erc721#ERC721-_safeMint-address-uint256-bytes-) | OpenZeppelin Docs
-
-
-
-## [L-03] require()/revert() statements should have descriptive reason strings
+## [L-02] require()/revert() statements should have descriptive reason strings
 
 ### Description
 
@@ -69,7 +54,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 
 
-## [L-04] Unnamed return parameters
+## [L-03] Unnamed return parameters
 
 ### Description
 
