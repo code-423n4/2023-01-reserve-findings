@@ -1,4 +1,4 @@
-## Compiler version Pragma is non-specific
+## [L-01] Compiler version Pragma is non-specific
 
 ### Description
 
@@ -19,7 +19,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 - [4.6 Unspecific compiler version pragma | Consensys Audit of 1inch Liquidity Protocol](https://consensys.net/diligence/audits/2020/12/1inch-liquidity-protocol/#unspecific-compiler-version-pragma)
 
 
-## Unsafe ERC20 Operation: _mint
+## [L-02] Unsafe ERC20 Operation: _mint
 
 ### Description
 
@@ -35,7 +35,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 
 
-## require()/revert() statements should have descriptive reason strings
+## [L-03] require()/revert() statements should have descriptive reason strings
 
 ### Description
 
@@ -69,7 +69,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 
 
-## Unnamed return parameters
+## [L-04] Unnamed return parameters
 
 ### Description
 
