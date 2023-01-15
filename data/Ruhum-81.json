@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "Ruhum",
+  "risk": "2",
+  "title": "Protocol uses unnecessarily large oracle timeout for assets",
+  "issueId": 81,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/81"
+}
