@@ -153,6 +153,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 - [Assert() vs Require() in Solidity – Key Difference & What to Use](https://codedamn.com/news/solidity/assert-vs-require-in-solidity)
 
 
+
 ## [G-06] Use assembly to check for `address(0)`
 
 ### Description
@@ -280,3 +281,91 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol
 ::98 =>         assert(origin_ != address(0));
 ```
+
+
+
+## [G-07] Usage of uints/ints smaller than 32 bytes (256 bits) incurs overhead
+
+### Description
+
+Gas consumption can be greater if you use items that are less than 32 bytes in size. This is such that the EVM can only handle 32 bytes at once. In order to increase the element's size from 32 bytes to the necessary amount, the EVM must do extra operations if it is lower than that. When necessary, it is advised to utilize a bigger size and then downcast.
+
+### Findings
+
+```Solidity
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol
+::37 => uint8 constant FIX_DECIMALS = 18;
+::41 => uint64 constant FIX_SCALE = 1e18;
+::310 =>     uint64 constant FIX_HALF = uint64(FIX_SCALE) / 2;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol
+::11 => uint48 constant BLOCKS_PER_HOUR = 300; // {blocks/hour}
+::64 =>         uint48 blocks = uint48(block.number) - battery.lastBlock;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol
+::8 => uint48 constant MAX_UNFREEZE_AT = type(uint48).max;
+::9 => uint48 constant MAX_SHORT_FREEZE = 2592000; // 1 month
+::10 => uint48 constant MAX_LONG_FREEZE = 31536000; // 1 year
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol
+::33 =>     uint48 public constant MAX_TRADING_DELAY = 31536000; // {s} 1 year
+::113 =>         uint48 basketTimestamp = basketHandler.timestamp();
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol
+::24 =>     uint48 public constant MAX_AUCTION_LENGTH = 604800; // {s} max valid duration - 1 week
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol
+::34 =>     uint8 public constant MAX_DESTINATIONS_ALLOWED = 100;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol
+::16 =>     uint48 public constant MAX_PERIOD = 31536000; // {s} 1 year
+::74 =>         uint48 numPeriods = uint48((block.timestamp) - lastPayout) / period;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol
+::198 =>         uint48 basketNonce = basketHandler.nonce();
+::387 =>         uint48 basketNonce = basketHandler.nonce();
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol
+::37 =>     uint48 public constant MAX_UNSTAKING_DELAY = 31536000; // {s} 1 year
+::38 =>     uint48 public constant MAX_REWARD_PERIOD = 31536000; // {s} 1 year
+::45 =>     uint8 public constant decimals = 18;
+::275 =>         (uint256 index, uint64 availableAt) = pushDraft(account, rsrAmount);
+::498 =>         uint48 numPeriods = (uint48(block.timestamp) - payoutLastPaid) / rewardPeriod;
+::560 =>         uint64 lastAvailableAt = index > 0 ? queue[index - 1].availableAt : 0;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol
+::137 =>             uint48 delta = uint48(block.timestamp) - lastSave; // {s}
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/CTokenFiatCollateral.sol
+::46 =>         int8 shiftLeft = 8 - int8(referenceERC20Decimals) - 18;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/CTokenSelfReferentialCollateral.sol
+::49 =>         int8 shiftLeft = 8 - int8(referenceERC20Decimals) - 18;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol
+::47 =>     uint48 private constant NEVER = type(uint48).max;
+::48 =>     uint48 private _whenDefault = NEVER;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/OracleLib.sol
+::19 =>         (uint80 roundId, int256 p, , uint256 updateTime, uint80 answeredInRound) = chainlinkFeed
+::26 =>         uint48 secondsSince = uint48(block.timestamp - updateTime);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/CTokenMock.sol
+::48 =>         int8 leftShift = 18 - int8(decimals()) + int8(IERC20Metadata(_underlyingToken).decimals());
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol
+::125 =>     uint64 public feeReceiverUserId = 1;
+::177 =>         uint64 userId = getUserId(msg.sender);
+::314 =>         uint64 userId = getUserId(msg.sender);
+::338 =>         (, , uint96 auctioneerSellAmount) = auctionData[auctionId]
+::346 =>             (, , uint96 sellAmountOfIter) = iterOrder.decodeOrder();
+::355 =>         (, uint96 buyAmountOfIter, uint96 sellAmountOfIter) = iterOrder.decodeOrder();
+::380 =>         uint64 userId = getUserId(msg.sender);
+::414 =>         uint96 fillVolumeOfAuctioneerOrder = fullAuctionedAmount;
+::519 =>         (, uint96 priceNumerator, uint96 priceDenominator) = auction
+::522 =>         (uint64 userId, , ) = orders[0].decodeOrder();
+::525 =>             (uint64 userIdOrder, uint96 buyAmount, uint96 sellAmount) = orders[i].decodeOrder();
+::570 =>             (, uint96 priceNumerator, uint96 priceDenominator) = auctionData[auctionId]
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/WETH.sol
+::23 =>     uint8 public decimals = 18;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol
+::257 =>         (, , uint96 denominator) = decodeOrder(elementToInsert);
+::342 =>         (uint64 userIdLeft, uint96 priceNumeratorLeft, uint96 priceDenominatorLeft) = decodeOrder(
+::610 =>         mapping(uint64 => address) idToAddress;
+::611 =>         mapping(address => uint64) addressToId;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol
+::31 =>     uint96 public constant MAX_ORDERS = 1e5;
+::112 =>         uint96 sellAmount = uint96(
+::121 =>         uint96 minBuyAmount = uint96(Math.max(1, req.minBuyAmount)); // Safe downcast; require'd
+::202 =>             uint192 clearingPrice = shiftl_toFix(boughtAmt, -int8(buy.decimals())).div(
+```
+
+### References
+
+- [Layout of State Variables in Storage | Solidity docs](https://docs.soliditylang.org/en/v0.8.11/internals/layout_in_storage.html#layout-of-state-variables-in-storage)
+- [GAS OPTIMIZATIONS ISSUES by Gokberk Gulgun](https://hackmd.io/@W1m6lTsFT5WAy9C_lRTX_g/rkr5Laoys)
