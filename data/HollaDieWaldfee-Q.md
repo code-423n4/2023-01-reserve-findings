@@ -8,12 +8,11 @@
 | L-04      | Asset architecture makes dangerous use of `delegatecall` | - | - |
 | L-05      | Introduce max value for `delayUntilDefault` | contracts/plugins/assets/FiatCollateral.sol | 1 |
 | L-06      | Only disable basket if new asset is not the same as old asset | contracts/p1/AssetRegistry.sol | 1 |
-| N-01      | `MAX_TRADE_SLIPPAGE` should be valid value | contracts/p1/mixins/Trading.sol | 1 |
-| N-02      | No need to access components via `Main` | - | __ |
-| N-03      | Use Solidity units when possible | __ | __ |
-| N-04      | Redundant code | __ | __ |
-| N-05      | Consider adding functionality to restake drafted withdrawal | contracts/p1/StRSR.sol | 1 |
-| N-06      | Consider implementing asymmetric peg range | contracts/plugins/assets/FiatCollateral.sol | 1 |
+| N-01      | No need to access components via `Main` | - | 4 |
+| N-02      | Use Solidity units when possible | contracts/p1/Broker.sol | 1 |
+| N-03      | Redundant code | contracts/p1/RToken.sol | 1 |
+| N-04      | Consider adding functionality to restake drafted withdrawal | contracts/p1/StRSR.sol | 1 |
+| N-05      | Consider implementing asymmetric peg range | contracts/plugins/assets/FiatCollateral.sol | 1 |
 
 ## [L-01] Check that `longFreeze >= shortFreeze`
 The `docs/system-design.md` documentation states that:  
@@ -136,16 +135,7 @@ I suggest changing the function to this:
     }
 ```
 
-
-
-## [N-01] `MAX_TRADE_SLIPPAGE` should be valid value
-It is convention throughout the protocol that if a `MAX_VALUE` is defined, the setter function should allow this `MAX_VALUE`.  
-
-Therefore when comparing a `value` with `MAX_VALUE`, `<=` should be used.  
-
-So `Trading.setMaxTradeSlippage` should allow `val` to be equal to `MAX_TRADE_SLIPPAGE` ([https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L129](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L129)).  
-
-## [N-02] No need to access components via `Main`
+## [N-01] No need to access components via `Main`
 All components of the protocol are registered in the `Main` contract. It is not always necessary to access components by calling the `Main` contract first.  
 
 Specifically the `p1` implementation follows the style to only access components via `Main` when the component is not accessible from the local contract.  
@@ -163,13 +153,13 @@ Use `assetRegistry` instead of `main.assetRegistry()`:
 
 [https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L443](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L443)  
 
-## [N-03] Use Solidity units when possible
+## [N-02] Use Solidity units when possible
 You should consider using Solidity units ([https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)) whenever possible to improve readability of the code.  
 
 Use `1 weeks` instead of `604800`:  
 [https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L24](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L24)  
 
-## [N-04] Redundant code
+## [N-03] Redundant code
 ### Redundant collateral status check
 In the `RToken.issue` function, the collateral status is checked two times:  
 
@@ -179,7 +169,7 @@ In the `RToken.issue` function, the collateral status is checked two times:
 
 The second check is redundant because it will always be true as made sure by the first check.  
 
-## [N-05] Consider adding functionality to restake drafted withdrawal
+## [N-04] Consider adding functionality to restake drafted withdrawal
 Unstaking `rsr` from the `StRSR` contract is performed by first calling `unstake` and then after an `unstakingDelay` calling `withdraw`.  
 
 This means that when a user calls `unstake`, he MUST wait the `unstakingDelay` and then he MUST call `withdraw`.  
@@ -192,7 +182,7 @@ The incentives involved with the `staking/unstaking` mechanism likely don't chan
 
 It might make staking even somewhat more attractive because of the added flexibility.  
 
-## [N-06] Consider implementing asymmetric peg range
+## [N-05] Consider implementing asymmetric peg range
 Currently the `FiatCollateral` contract implements a symmetric range in which `targetPerRef` values are allowed for the collateral to be `SOUND`. This means the same delta is used to calculate the `pegBottom` and `pegTop` sides:  
 
 [https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol#L85-L87](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol#L85-L87)  
@@ -200,7 +190,3 @@ Currently the `FiatCollateral` contract implements a symmetric range in which `t
 It can be beneficial for some `FiatCollateral` assets to allow a higher deviation on one side than on the other side.  
 
 E.g. the USD/USDT peg might be considered valid in a range from 0.95 to 1.02 with the asymmetric range instead of 0.95 - 1.05 with the symmetric range.  
-
-
-
-
