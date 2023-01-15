@@ -151,3 +151,132 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 ### Reference
 
 - [Assert() vs Require() in Solidity – Key Difference & What to Use](https://codedamn.com/news/solidity/assert-vs-require-in-solidity)
+
+
+## [G-06] Use assembly to check for `address(0)`
+
+### Description
+
+By checking for `address(0)` using assembly language, you can avoid the use of more gas-expensive operations such as calling a smart contract or reading from storage. This can save 6 gas per instance.
+
+### Findings
+
+```Solidity
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol
+::94 =>         require(account != address(0), "cannot grant role to address 0");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/ComponentRegistry.sol
+::37 =>         require(address(val) != address(0), "invalid RToken address");
+::45 =>         require(address(val) != address(0), "invalid StRSR address");
+::53 =>         require(address(val) != address(0), "invalid AssetRegistry address");
+::61 =>         require(address(val) != address(0), "invalid BasketHandler address");
+::69 =>         require(address(val) != address(0), "invalid BackingManager address");
+::77 =>         require(address(val) != address(0), "invalid Distributor address");
+::85 =>         require(address(val) != address(0), "invalid RSRTrader address");
+::93 =>         require(address(val) != address(0), "invalid RTokenTrader address");
+::101 =>         require(address(val) != address(0), "invalid Furnace address");
+::109 =>         require(address(val) != address(0), "invalid Broker address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol
+::670 =>         if (erc20 == IERC20(address(0))) return false;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol
+::57 =>         require(address(gnosis_) != address(0), "invalid Gnosis address");
+::59 =>             address(tradeImplementation_) != address(0),
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol
+::49 =>             address(rsr_) != address(0) &&
+::50 =>                 address(gnosis_) != address(0) &&
+::51 =>                 address(rsrAsset_) != address(0) &&
+::52 =>                 address(implementations_.main) != address(0) &&
+::53 =>                 address(implementations_.trade) != address(0) &&
+::54 =>                 address(implementations_.components.assetRegistry) != address(0) &&
+::55 =>                 address(implementations_.components.backingManager) != address(0) &&
+::56 =>                 address(implementations_.components.basketHandler) != address(0) &&
+::57 =>                 address(implementations_.components.broker) != address(0) &&
+::58 =>                 address(implementations_.components.distributor) != address(0) &&
+::59 =>                 address(implementations_.components.furnace) != address(0) &&
+::60 =>                 address(implementations_.components.rsrTrader) != address(0) &&
+::61 =>                 address(implementations_.components.rTokenTrader) != address(0) &&
+::62 =>                 address(implementations_.components.rToken) != address(0) &&
+::63 =>                 address(implementations_.components.stRSR) != address(0),
+::109 =>         require(owner != address(0) && owner != address(this), "invalid owner");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol
+::162 =>         require(dest != address(0), "dest cannot be zero");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Main.sol
+::32 =>         require(address(rsr_) != address(0), "invalid RSR address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RevenueTrader.sol
+::29 =>         require(address(tokenToBuy_) != address(0), "invalid token address");
+::54 =>         if (address(trades[erc20]) != address(0)) return;
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol
+::675 =>         require(from != address(0), "ERC20: transfer from the zero address");
+::676 =>         require(to != address(0), "ERC20: transfer to the zero address");
+::695 =>         require(account != address(0), "ERC20: mint to the zero address");
+::711 =>         require(account != address(0), "ERC20: burn from the zero address");
+::732 =>         require(owner != address(0), "ERC20: approve from the zero address");
+::733 =>         require(spender != address(0), "ERC20: approve to the zero address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSRVotes.sol
+::172 =>             if (src != address(0)) {
+::181 =>             if (dst != address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Component.sol
+::34 =>         require(address(main_) != address(0), "main is zero address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol
+::94 =>         if (address(trade.sell) == address(0) || address(trade.buy) == address(0)) {
+::401 =>         if (address(trade.sell) == address(0) && address(trade.buy) != address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol
+::68 =>         if (address(trade) == address(0)) return;
+::114 =>         assert(address(trades[sell]) == address(0));
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/ERC20.sol
+::242 =>         require(sender != address(0), "ERC20: transfer from the zero address");
+::243 =>         require(recipient != address(0), "ERC20: transfer to the zero address");
+::262 =>         require(account != address(0), "ERC20: mint to the zero address");
+::283 =>         require(account != address(0), "ERC20: burn from the zero address");
+::310 =>         require(owner != address(0), "ERC20: approve from the zero address");
+::311 =>         require(spender != address(0), "ERC20: approve to the zero address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol
+::94 =>             if (address(incentivesController) != address(0)) {
+::142 =>         require(owner != address(0), StaticATokenErrors.INVALID_OWNER);
+::170 =>         require(depositor != address(0), StaticATokenErrors.INVALID_DEPOSITOR);
+::210 =>         require(owner != address(0), StaticATokenErrors.INVALID_OWNER);
+::294 =>         require(recipient != address(0), StaticATokenErrors.INVALID_RECIPIENT);
+::317 =>         require(recipient != address(0), StaticATokenErrors.INVALID_RECIPIENT);
+::363 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::366 =>         if (from != address(0)) {
+::369 =>         if (to != address(0)) {
+::378 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::404 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::473 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::485 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::492 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::531 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+::578 =>         if (address(INCENTIVES_CONTROLLER) == address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol
+::49 =>         require(address(chainlinkFeed_) != address(0), "missing chainlink feed");
+::51 =>         require(address(erc20_) != address(0), "missing erc20");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/CTokenFiatCollateral.sol
+::26 =>         require(address(comptroller_) != address(0), "comptroller missing");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/CTokenNonFiatCollateral.sol
+::29 =>             address(targetUnitChainlinkFeed_) != address(0),
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/CTokenSelfReferentialCollateral.sol
+::30 =>         require(address(comptroller_) != address(0), "comptroller missing");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/EURFiatCollateral.sol
+::24 =>         require(address(uoaPerTargetFeed_) != address(0), "missing uoaPerTarget feed");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/NonFiatCollateral.sol
+::24 =>         require(address(uoaPerTargetFeed_) != address(0), "missing uoaPerTarget feed");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/RTokenAsset.sol
+::28 =>         require(address(erc20_) != address(0), "missing erc20");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/ATokenMock.sol
+::81 =>         if (address(aaveToken) != address(0) && aaveBalances[msg.sender] > 0) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/ComptrollerMock.sol
+::24 =>         if (address(compToken) != address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol
+::260 =>             if (allowListManger != address(0)) {
+::500 =>         auctionAccessManager[auctionId] = address(0);
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/GnosisMock.sol
+::108 =>         if (bid.bidder == address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/GnosisMockReentrant.sol
+::74 =>         if (bid.bidder == address(0)) {
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol
+::615 =>         return self.idToAddress[id + 1] != address(0);
+::637 =>         require(addr != address(0), "Cannot insert zero address");
+::640 =>         if (self.addressToId[addr] != 0 || self.idToAddress[id + 1] != address(0)) {
+::936 =>         require(newOwner != address(0), "Ownable: new owner is the zero address");
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol
+::98 =>         assert(origin_ != address(0));
+```
