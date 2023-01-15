@@ -19,7 +19,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 - [4.6 Unspecific compiler version pragma | Consensys Audit of 1inch Liquidity Protocol](https://consensys.net/diligence/audits/2020/12/1inch-liquidity-protocol/#unspecific-compiler-version-pragma)
 
 
-## [L-02] Unsafe ERC20 Operation: _mint
+## [L-02] Unsafe operation: _mint
 
 ### Description
 
