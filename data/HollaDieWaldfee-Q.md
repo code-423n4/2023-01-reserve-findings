@@ -8,11 +8,14 @@
 | L-04      | Asset architecture makes dangerous use of `delegatecall` | - | - |
 | L-05      | Introduce max value for `delayUntilDefault` | contracts/plugins/assets/FiatCollateral.sol | 1 |
 | L-06      | Only disable basket if new asset is not the same as old asset | contracts/p1/AssetRegistry.sol | 1 |
+| L-07      | Use `lotLow` price instead of `low` price to calculate total asset value | contracts/p1/mixins/RecollateralizationLib.sol | 1 |
+| L-08      | Round with mode `FLOOR` instead of `CEIL` in calculation of `range.bottom` | contracts/p1/mixins/RecollateralizationLib.sol | 1 |
 | N-01      | No need to access components via `Main` | - | 4 |
 | N-02      | Use Solidity units when possible | contracts/p1/Broker.sol | 1 |
 | N-03      | Redundant code | contracts/p1/RToken.sol | 1 |
 | N-04      | Consider adding functionality to restake drafted withdrawal | contracts/p1/StRSR.sol | 1 |
 | N-05      | Consider implementing asymmetric peg range | contracts/plugins/assets/FiatCollateral.sol | 1 |
+| N-06      | Consider leaving the basket `DISABLED` when it has `IFFY` collateral and allowing redemption when basket is `DISABLED` | - | - |
 
 ## [L-01] Check that `longFreeze >= shortFreeze`
 The `docs/system-design.md` documentation states that:  
@@ -135,6 +138,25 @@ I suggest changing the function to this:
     }
 ```
 
+## [L-07] Use `lotLow` price instead of `low` price to calculate total asset value
+Currently the `RecollateralizationLib.totalAssetValue` function makes use of the `low` price to calculate the total asset value under management by the BackingManager:  
+
+[https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L264](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L264)  
+
+You should consider using the `lotLow` price instead. This is since the purpose of the `lotLow` price is to provide a price that decays to zero if there is something wrong with the price feed. The `low` price however will just be `0` when there is something wrong with the price feed. The `lotLow` price therefore more accurately reflects the true value of the asset.  
+
+## [L-08] Round with mode `FLOOR` instead of `CEIL` in calculation of `range.bottom`
+In the `RecollateralizationLib.basketRange` function, `range.bottom` is calculated like this:  
+
+[https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L201](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L201)  
+
+```solidity
+range.bottom = fixMin(assetsLow.div(basketPriceHigh, CEIL), range.top);
+```
+
+The calculation is using rounding mode `CEIL`. This is wrong because `range.bottom` represents the low value of the range. Therefore the calculation should round down, i.e. use rounding mode `FLOOR`.  
+
+
 ## [N-01] No need to access components via `Main`
 All components of the protocol are registered in the `Main` contract. It is not always necessary to access components by calling the `Main` contract first.  
 
@@ -190,3 +212,20 @@ Currently the `FiatCollateral` contract implements a symmetric range in which `t
 It can be beneficial for some `FiatCollateral` assets to allow a higher deviation on one side than on the other side.  
 
 E.g. the USD/USDT peg might be considered valid in a range from 0.95 to 1.02 with the asymmetric range instead of 0.95 - 1.05 with the symmetric range.  
+
+## [N-06] Consider leaving the basket `DISABLED` when it has `IFFY` collateral and allowing redemption when basket is `DISABLED`
+It was discussed with the Sponsor whether it is correct how the `BasketHandler` handles `IFFY` collateral.  
+
+I brought up the following concern:  
+
+> In the BasketHandler._switchBasket function, a collateral with the status IFFY is considered a good collateral and is added to the reference basket. 
+> Some operations however like StRSR.withdraw require that there is no IFFY collateral in the basket.
+
+In the discussion with the sponsor it was determined that:  
+
+> So it might be that leaving the basket DISABLED and enabling redemption on DISABLED baskets makes more sense
+
+There is no vulnerability with the current behavior but it might be beneficial to change the behavior of the protocol as stated above.  
+
+The sponsor should therefore further assess the proposed change and implement it if it is beneficial.  
+
