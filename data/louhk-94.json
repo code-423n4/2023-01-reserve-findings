@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "louhk",
+  "risk": "3",
+  "title": "`prepareTradeSell` function does not check whether the sell price of the token (sellPrice) is greater than zero.",
+  "issueId": 94,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/94"
+}
