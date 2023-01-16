@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "2",
+  "title": "Libraries|RedemptionBattery.sol | Function \"currentCharge\" not returning any value in smart contract.",
+  "issueId": 85,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/85"
+}
