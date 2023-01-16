@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "carlitox477",
+  "risk": "2",
+  "title": "RedemptionBatteryLib assumes constant average block emission rate, Resulting in the ability to redeem more tokens than intended in the event of an increase in block emission rate",
+  "issueId": 88,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/88"
+}
