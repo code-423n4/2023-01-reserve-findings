@@ -58,3 +58,32 @@ Just assigning it with ``newStakeRSR`` can save gas here:
 ```
 stakeRSR = newStakeRSR;
 ```
+
+G10. 
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L271
+Enclosing this inside ``unchecked`` can save gas since underflow is inposible.
+```
+unchecked{
+    uint256 rsrAmount = stakeRSR - newStakeRSR;
+}
+```
+
+G11. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L316
+Enclosing it inside unchecked can save gas since underflow is impossible due to the way the queue is created.
+```
+unchecked{
+   uint192 draftAmount = queue[endId - 1].drafts - oldDrafts;
+}
+```
+
+G12. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L322-L326
+Enclosing it inside unchecked can save gas since underflow is impossible here.
+```
+unchecked{
+     uint256 newTotalDrafts = totalDrafts - draftAmount;
+        // newDraftRSR: {qRSR} = {qDrafts} * D18 / D18{qDrafts/qRSR}
+        uint256 newDraftRSR = (newTotalDrafts * FIX_ONE_256 + (draftRate - 1)) / draftRate;
+        uint256 rsrAmount = draftRSR - newDraftRSR;
+}
+```
+
