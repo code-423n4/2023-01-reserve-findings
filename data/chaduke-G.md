@@ -45,3 +45,10 @@ require(val * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
 ```
 G7. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L497-L498
 Caching state variable ``rewardPeriod`` can save gas here as it has been accessed multiple times.
+
+G8. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L225
+Enclosing this inside unchecked can save gas since underflow is impossible here.
+```
+uint256 stakeAmount = newTotalStakes - totalStakes;
+
+```
