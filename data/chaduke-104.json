@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "chaduke",
+  "risk": "2",
+  "title": "_spendAllowance() fails to consider the case of owner == spender",
+  "issueId": 104,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/104"
+}
