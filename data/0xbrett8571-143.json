@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "2",
+  "title": "Lack of Role Transferability in `__Auth_init` Function",
+  "issueId": 143,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/143"
+}
