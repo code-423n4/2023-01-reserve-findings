@@ -9,3 +9,9 @@ The documentation should be "Require the BU to RToken exchange rate to be in [1e
 QA3. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L230-L236
 It is safer to perform the RSR tranfer first before the minting of StRSR so that a user will not own StRST first before transfering the RST to the contract.
 
+QA4. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L234
+We need to use ``RoundingMode.CEIL`` here:
+```
+totalSupply() > 0 ? mulDiv(basketsNeeded, amtRToken, totalSupply(), RoundingMode.CEIL)
+
+``` 
