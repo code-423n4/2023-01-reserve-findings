@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "rvierdiiev",
+  "risk": "3",
+  "title": "BackingManager._manageTokens will fail in case when `stRSR.seizeRSR` is called with amount that is bigger than it's RSR balance",
+  "issueId": 128,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/128"
+}
