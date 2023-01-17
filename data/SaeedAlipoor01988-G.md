@@ -38,6 +38,9 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/BasketHandler.sol#L564
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/BasketHandler.sol#L610
 
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/AssetRegistry.sol#L23
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/AssetRegistry.sol#L32
+
 ////////////////////////////////////////////// ***** //////////////////////////////////////////////
 
 <x> += <y> costs more gas than <x> = <x> + <y> for state variables. Using the addition operator instead of plus-equals saves 113 gas.
