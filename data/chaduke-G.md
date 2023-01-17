@@ -52,3 +52,9 @@ Enclosing this inside unchecked can save gas since underflow is impossible here.
 uint256 stakeAmount = newTotalStakes - totalStakes;
 
 ```
+
+G9. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L229
+Just assigning it with ``newStakeRSR`` can save gas here:
+```
+stakeRSR = newStakeRSR;
+```
