@@ -58,3 +58,15 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/StRSR.sol#L282
 
 ////////////////////////////////////////////// ***** //////////////////////////////////////////////
+
+Clones for cheap contract deployment
+There’s a way to save a significant amount of gas on deployment using Clones: https://www.youtube.com/watch?v=3Mw-pMmJ7TA .
+With the standard way using the new keyword, each contract created contains the entire logic. Using proxies allow only the first implementation to contain the logic, saving deployment costs on subsequent instances deployed.
+Cheap Contract Deployment Through Clones
+There’s a way to save a significant amount of gas on deployment using Clones: https://www.youtube.com/watch?v=3Mw-pMmJ7TA .
+This is a solution that was adopted, as an example, by Porter Finance. They realized that deploying using clones was 10x cheaper:
+https://github.com/porter-finance/v1-core/issues/15#issuecomment-1035639516
+https://github.com/porter-finance/v1-core/pull/34
+Consider applying a similar pattern.
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/Broker.sol#L67
