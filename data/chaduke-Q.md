@@ -23,3 +23,10 @@ lastIssRate = uint192((issuanceRate * totalSupply()) / FIX_ONE);
 
 ```
 
+QA6. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L655-L659
+Range check is necessary for ``left`` and ``right`` so that their values are proper
+```
+If(left < queue.left || right > queue.right || left > right) revert LeftRightOutOfRange();
+
+```
+
