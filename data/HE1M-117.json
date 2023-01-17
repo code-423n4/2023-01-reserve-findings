@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "HE1M",
+  "risk": "2",
+  "title": "Leave the protocol without any `SHORT_FREEZER`",
+  "issueId": 117,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/117"
+}
