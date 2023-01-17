@@ -6,3 +6,6 @@ QA2. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b3
 The documentation should be "Require the BU to RToken exchange rate to be in [1e-9, 1e9], but represented as 
 [FIX_ONE_256*1e-9, FIX_ONE_256*1e9] =  [1e9, 1e27]". Otherwise, it might not appear to be consistent with the implementation.
  
+QA3. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L230-L236
+It is safer to perform the RSR tranfer first before the minting of StRSR so that a user will not own StRST first before transfering the RST to the contract.
+
