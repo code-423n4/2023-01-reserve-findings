@@ -87,3 +87,16 @@ unchecked{
 }
 ```
 
+G12. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L351-L353
+Introducing a variable ``newLastIssRate`` here can save gas so that we do not need to read the state variable ``lastIssRate`` multiple times. 
+
+```
+            uint192 private newLastIssRate;
+
+            newLastIssRate = uint192((issuanceRate * totalSupply()) / FIX_ONE);
+            // uint192(<) is equivalent to Fix.lt
+            if (newLastIssRate < MIN_BLOCK_ISSUANCE_LIMIT) lastIssRate = MIN_BLOCK_ISSUANCE_LIMIT;
+            else lastIssRate = newLastIssRate;
+
+```
+
