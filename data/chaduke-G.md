@@ -13,3 +13,23 @@ for (uint256 i = 0; i < tokenslen; ++i) {
             IERC20Upgradeable(queue.tokens[i]).safeTransfer(account, amt[i]);
 }
 ```
+
+G3. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L765-L766
+Enclosing it into unchecked to save gas. Underflow is impossible due to the way a queue is created.
+```
+unchecked{
+    amtRToken = rightItem.amtRToken - leftItem.amtRToken;
+    amtBaskets = rightItem.amtBaskets - leftItem.amtBaskets;
+}
+```
+
+G4.  https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L768-L771
+Enclosing it into unchecked to save gas. Underflow is impossible here.
+```
+unchecked{
+                amtDeposits[i] = rightItem.deposits[i] - leftItem.deposits[i];
+
+                // Decrement liabilities
+                liabilities[IERC20(queue.tokens[i])] -= amtDeposits[i];
+}
+```
