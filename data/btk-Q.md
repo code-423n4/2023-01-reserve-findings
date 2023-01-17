@@ -7,6 +7,7 @@
 | [L-03] | `call()` should be used instead of `transfer()`                                    | 1             |
 | [L-04] | `init()` function can be called by anyone                                          | 12            |
 | [L-05] | Payout may be too soon                                                             | 1             |
+| [L-06] | Integer overflow by unsafe casting                                                 | 0             |
 
 ### Total NC issues
 
@@ -24,6 +25,9 @@
 | [NC-10] | Use `bytes.concat()` and `string.concat()`                          | 5             |
 | [NC-11] | Solidity compiler optimizations can be problematic                  | 1             |
 | [NC-12] | Mark visibility of `init()` functions as external                   | 2             |
+| [NC-13] | Value is not validated to be different than the existing one        | 13            |
+| [NC-14] | Lack of event emit                                                  | 2             |
+| [NC-15] | Signature Malleability of EVM's `ecrecover()`                       | 3             |
 
 
 ## [L-01] Low level calls with solidity version 0.8.14 and lower can result in optimiser bug
@@ -142,6 +146,34 @@ The first timestamp should be based on when rewards are first payed, so that an 
 ### Lines of code 
  
 - [StRSR.sol:180](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L180)
+
+## [L-06] Integer overflow by unsafe casting
+
+Keep in mind that the version of solidity used, despite being greater than 0.8, does not prevent integer overflows during casting, it only does so in mathematical operations.
+
+It is necessary to safely convert between the different numeric types.
+
+```solidity
+    endTime = uint48(block.timestamp) + auctionLength;
+```
+
+### Lines of code 
+
+- [GnosisTrade.sol:103](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L103)
+- [FiatCollateral.sol:134](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol#L134)
+- [FiatCollateral.sol:195](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol#L195)
+- [Asset.sol:95](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L95)
+- [Asset.sol:137](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L137)
+- [StRSR.sol:180](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L180)
+- [StRSR.sol#L561](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L561)
+- [Furnace.sol:42](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L42)
+- [Furnace.sol:71](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L71)
+- [Furnace.sol:74](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L74)
+- [BasketHandler.sol:637](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L637)
+
+### Recommended Mitigation Steps
+
+Use OpenZeppelin [safeCast](https://docs.openzeppelin.com/contracts/3.x/api/utils#SafeCast) library.
 
 ## [NC-01] Use `require()` instead of `assert()`
 
@@ -394,3 +426,52 @@ Short term, measure the gas savings from optimizations and carefully weigh them 
 ### Recommended Mitigation Steps
 
 Change the visibility of `init()` functions to external
+
+## [NC-13] Value is not validated to be different than the existing one
+
+While the value is validated to be in the constant bounds, it is not validated to be different than the existing one. Queueing the same value will cause multiple abnormal events to be emitted, will ultimately result in a no-op situation.
+
+### Lines of code
+
+- [Trading.sol:128](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L128)
+- [Trading.sol:135](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L135)
+- [StRSR.sol:812](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L812)
+- [StRSR.sol:820](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L820)
+- [StRSR.sol:828](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L828)
+- [RToken.sol:579](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L579)
+- [RToken.sol#L589](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L589)
+- [RToken.sol:602](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L602)
+- [RToken.sol:615](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L615)
+- [Furnace.sol:88](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L88)
+- [Furnace.sol:96](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L96)
+- [BackingManager.sol:256](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L256)
+- [BackingManager.sol:263](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L263)
+
+### Recommended Mitigation Steps
+
+Add a `require()` statement to check that the new value is different than the current one.
+
+## [NC-14] Lack of event emit   
+
+The below methods do not emit an event when the state changes, something that it's very important for dApps and users.
+
+### Lines of code 
+
+- [StRSR.sol:80](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L803)
+- [StRSR.sol:807](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L807)
+
+## [NC-15] Signature Malleability of EVM's `ecrecover()`
+
+The function calls the Solidity `ecrecover()` function directly to verify the given signatures. However, the `ecrecover()` EVM opcode allows malleable (non-unique) signatures and thus is susceptible to replay attacks.
+
+Although a replay attack seems not possible for this contract, I recommend using the battle-tested OpenZeppelin's ECDSA library.
+
+### Lines of code 
+
+- [StaticATokenLM.sol:155](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L155)
+- [StaticATokenLM.sol:193](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L193)
+- [StaticATokenLM.sol:234](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L234)
+
+### Recommended Mitigation Steps
+
+Use the ecrecover function from OpenZeppelin's ECDSA library for signature verification. (Ensure using a version > 4.7.3 for there was a critical bug >= 4.1.0 < 4.7.3).
