@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "jah",
+  "risk": "3",
+  "title": "user can lose there collateral if the new collateral token is smaller than the nonce -1 collateral  ",
+  "issueId": 112,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/112"
+}
