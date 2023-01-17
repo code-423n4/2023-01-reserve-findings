@@ -19,15 +19,17 @@ For instance, the import instances below could be refactored as follows:
 + import {UUPSUpgradeable.sol} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
     [ ... ]
 ```
-## Interfaces should be imported
-Some contracts have interface(s) showing up in its/their entirety at the top/bottom of the contract facilitating an ease of references on the same file page. This has, in certain instances, made the already large contract size to house over a thousand code lines. Consider saving the interfaces entailed as `Ixxx.sol` respectively, and have them imported like all other files.
+## Interfaces and libraries should be separately saved and imported
+Some contracts have interface(s) or library showing up in its/their entirety at the top/bottom of the contract facilitating an ease of references on the same file page. This has, in certain instances, made the already large contract size to house an excessive code base. Consider saving the interfaces and libraries entailed respectively, and having them imported like all other files.
 
 Here are some of the instances entailed:
 
 [File: IMain.sol](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IMain.sol)
+[File: BasketHandler.sol#L61-L104](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L61-L104)
+[File: ATokenFiatCollateral.sol#L10-L27](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/ATokenFiatCollateral.sol#L10-L27)
 
 ## Inconsistency in interface naming
-Some interfaces in the code bases are named without the prefix `I` that could cause confusion to developers and readers referencing or interacting with the protocol. Consider conforming to Solidity's naming conventions by having the instances below refactored as follow:
+Some interfaces in the code bases are named without the prefix `I` that could cause confusion to developers and readers referencing or interacting with the protocol. Consider conforming to Solidity's naming conventions by having the specific instance below refactored as follows:
 
 [File: IMain.sol#L166](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IMain.sol#L166)
 
@@ -35,20 +37,15 @@ Some interfaces in the code bases are named without the prefix `I` that could ca
 - interface TestIMain is IMain {
 + interface ITestIMain is IMain {
 ```
-## Abbreviations
-Abbreviations should be documented or provided with their definitions to help users/developers pick up the intended meaning and avoid guessing/confusion.
+## Camel/snake casing function names
+Function names should also be conventionally camel cased where possible. If snake case is preferred/adopted, consider lower casing them.
 
-Here are some of the instances entailed:
+Here is a specific instance entailed:
 
-[File: RecollateralizationLib.sol#L25](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L25) 
-
-```solidity
-    uint192 minTradeVolume; // {UoA} @ audit Unit of Accounting/Action/Assessment/???
-```
-[File: RecollateralizationLib.sol#L87](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L87)
+[File: ATokenFiatCollateral.sol#L26](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/ATokenFiatCollateral.sol#L26)
 
 ```solidity
-        // Compute basket range -  {BU} @ audit Basket Unit/Business Unit/???
+    function REWARD_TOKEN() external view returns (IERC20);
 ```
 ## `require()` over `assert()`
 As documented by [Solidity Documentations](https://docs.soliditylang.org/en/v0.8.17/control-structures.html):
@@ -90,7 +87,133 @@ Here are some of the instances entailed:
 [File: TradeLib.sol](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/TradeLib.sol)
 
 ```solidity
-55:         uint192 s = trade.sellAmount > maxSell ? maxSell : trade.sellAmount; // {sellTok}
+55:         uint192 s = trade.sellAmount > maxSell ? maxSell : trade.sellAmount; // {sellTok} @ audit s
 
-59:        uint192 b = safeMulDivCeil(
+59:        uint192 b = safeMulDivCeil( // @ audit b
+```
+## Time Units
+According to:
+
+https://docs.soliditylang.org/en/v0.8.14/units-and-global-variables.html
+
+suffixes like `seconds`, `minutes`, `hours`, `days` and `weeks` after literal numbers can be used to specify units of time where seconds are the base unit and units are considered naively in the following way:
+
+1 == 1 seconds
+1 minutes == 60 seconds
+1 hours == 60 minutes
+1 days == 24 hours
+1 weeks == 7 days
+
+As an example, to minimize human error while making the assignment more verbose, the constant declarations below may respectively be rewritten as follows:
+
+[File: BackingManager.sol#L33](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L33)
+
+```diff
+-    uint48 public constant MAX_TRADING_DELAY = 31536000; // {s} 1 year
++    uint48 public constant MAX_TRADING_DELAY = 365 days; // {s} 1 year
+```
+[File: Broker.sol#L24](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L24)
+
+```diff
+-    uint48 public constant MAX_AUCTION_LENGTH = 604800; // {s} max valid duration - 1 week
++    uint48 public constant MAX_AUCTION_LENGTH = 1 weeks; // {s} max valid duration - 1 week
+```
+## Use `delete` to clear variables
+`delete a` assigns the initial value for the type to `a`. i.e. for integers it is equivalent to `a = 0`, but it can also be used on arrays, where it assigns a dynamic array of length zero or a static array of the same length with all elements reset. For structs, it assigns a struct with all members reset. Similarly, it can also be used to set an address to zero address or a boolean to false. It has no effect on whole mappings though (as the keys of mappings may be arbitrary and are generally unknown). However, individual keys and what they map to can be deleted: If `a` is a mapping, then `delete a[x]` will delete the value stored at x.
+
+The delete key better conveys the intention and is also more idiomatic.
+
+For instance, the mapping instance below may be refactored as follows:
+
+[File: AssetRegistry.sol#L93](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/AssetRegistry.sol#L93)
+
+```diff
+-        assets[asset.erc20()] = IAsset(address(0));
++        delete assets[asset.erc20()];
+```
+##Minimization of truncation
+The number of divisions in an equation should be reduced to minimize truncation frequency, serving to achieve higher precision. And, where deemed fit, comment the code line with the original multiple division arithmetic operation for clarity reason.
+
+For instance, the equation below with three division may be refactored as follows:
+
+[File: StRSR.sol#L427](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L427)
+
+```diff
+-        return (FIX_SCALE_SQ + (stakeRate / 2)) / stakeRate; // ROUND method
++        return ((FIX_SCALE_SQ * 2) + stakeRate) / (stakeRate * 2); // ROUND method
+```
+## Events associated with setter functions
+Consider having events associated with setter functions emit both the new and old values instead of just the new value.
+
+Here are some of the instances entailed:
+
+[File: StRSR.sol#L803-L809](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L803-L809)
+
+```solidity
+    function setName(string calldata name_) external governance {
+        name = name_;
+    }
+
+    function setSymbol(string calldata symbol_) external governance {
+        symbol = symbol_;
+    }
+```
+## Modifier on repeated code
+Code line repeatedly used may be grouped into a modifier.
+
+For instance, a modifier for the identical require statement in `setUnstakingDelay()` and `setRewardPeriod()` of StRSR.sol may be refactored as follows:
+
+[File: StRSR.sol#L812-L825](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L812-L825)
+
+```diff
++    modifier ratioCompatible() {
++        _;
++        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
++    }
+
+-    function setUnstakingDelay(uint48 val) public governance {
++    function setUnstakingDelay(uint48 val) public ratioCompatible governance {
+        require(val > 0 && val <= MAX_UNSTAKING_DELAY, "invalid unstakingDelay");
+        emit UnstakingDelaySet(unstakingDelay, val);
+        unstakingDelay = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+    }
+
+    /// @custom:governance
+-    function setRewardPeriod(uint48 val) public governance {
++    function setRewardPeriod(uint48 val) public ratioCompatible governance {
+        require(val > 0 && val <= MAX_REWARD_PERIOD, "invalid rewardPeriod");
+        emit RewardPeriodSet(rewardPeriod, val);
+        rewardPeriod = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+    }
+```
+## Missing check on negative price
+`price()` in OracleLib.sol should have a check for negative price as follows:
+
+[File: OracleLib.sol#L14-L31](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/OracleLib.sol#L14-L31) 
+
+```diff
++    error NegativePrice();    
+
+    function price(AggregatorV3Interface chainlinkFeed, uint48 timeout)
+        internal
+        view
+        returns (uint192)
+    {
+        (uint80 roundId, int256 p, , uint256 updateTime, uint80 answeredInRound) = chainlinkFeed
+            .latestRoundData();
+
+        if (updateTime == 0 || answeredInRound < roundId) {
+            revert StalePrice();
+        }
+        // Downcast is safe: uint256(-) reverts on underflow; block.timestamp assumed < 2^48
+        uint48 secondsSince = uint48(block.timestamp - updateTime);
+        if (secondsSince > timeout) revert StalePrice();
+
++        if (p < 0) revert NegativePrice();    
+
+        // {UoA/tok}
+        return shiftl_toFix(uint256(p), -int8(chainlinkFeed.decimals()));
+    }
 ```
