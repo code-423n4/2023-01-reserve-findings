@@ -33,3 +33,13 @@ unchecked{
                 liabilities[IERC20(queue.tokens[i])] -= amtDeposits[i];
 }
 ```
+
+G5. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L822-L823
+Caching state variable ``rewardPeriod`` can save gas since it is used twice.
+
+G6. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L824
+Using ``val`` instead of reading state variable ``rewardPeriod`` here can save gas.
+```
+require(val * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+
+```
