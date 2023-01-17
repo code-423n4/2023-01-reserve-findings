@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "rvierdiiev",
+  "risk": "2",
+  "title": "No slippage protection for RToken issuance if user doesn't have order inside queue and tokens can be minted in current block",
+  "issueId": 121,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/121"
+}
