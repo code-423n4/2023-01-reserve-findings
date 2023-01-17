@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "Unclear Dependency on IMain Contract in IFurnace Contract's init Function",
+  "issueId": 131,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/131"
+}
