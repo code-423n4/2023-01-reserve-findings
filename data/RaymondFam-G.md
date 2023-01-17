@@ -62,11 +62,6 @@ As an example, the instance below may be refactored as follows:
 +            }
           }
 ```
-## `uint256` over `uint192`
-In RecollateralizationLib.sol and Trading.sol, the use of `uint192` in the [structs](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L24-L36) and declaring [state variables](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L20-L21) has no gas saving at all because each `uint192` variable is too sizable to accommodate its `uint192` counterpart, making the variables separately taking up 1 single slot on its own still. Neither will the use of `uint192` have any inherent gas benefit when dealing with function arguments or memory values. In fact, the contract’s gas usage may be higher because the EVM operates on 32 bytes at a time. If the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size in properly enforcing the limits of this smaller type.
-
-As such, consider resorting to `uint256` instead of `uint192`, and using FixLib for `uint256` too.
-
 ## Non-strict inequalities are cheaper than strict ones
 In the EVM, there is no opcode for non-strict inequalities (>=, <=) and two operations are performed (> + = or < + =).
 
@@ -78,3 +73,179 @@ As an example, the following `>=` inequality instance may be refactored as follo
 -                assert(erc20s[i].balanceOf(address(this)) >= liabilities[erc20s[i]]);
 +                assert(erc20s[i].balanceOf(address(this)) > liabilities[erc20s[i]] - 1);
 ```
+## `break` or `continue` in for loop
+`for` loop entailing large array with reverting logic should incorporate `break` or `continue` to cater for element(s) failing to get through the iteration(s). This will tremendously save gas on instances where the loop specifically fails to execute at the end of the iterations.
+
+Here is an instance entailed where `refresh()` is associated with try catch reverting code:
+
+[File: AssetRegistry.sol#L46-L52](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/AssetRegistry.sol#L46-L52)
+
+```solidity
+    function refresh() public {
+        // It's a waste of gas to require notPausedOrFrozen because assets can be updated directly
+        uint256 length = _erc20s.length();
+        for (uint256 i = 0; i < length; ++i) {
+            assets[IERC20(_erc20s.at(i))].refresh();
+        }
+    }
+```
+## Split require statements using &&
+Instead of using the `&&` operator in a single require statement to check multiple conditions, using multiple require statements with 1 condition per require statement will save 3 GAS per `&&`.
+
+Here is a sample instance entailed:
+
+[File: Broker.sol#L134-L137](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L134-L137)
+
+```solidity
+        require(
+            newAuctionLength > 0 && newAuctionLength <= MAX_AUCTION_LENGTH,
+            "invalid auctionLength"
+        );
+```
+## Use of named returns for local variables saves gas
+You can have further advantages in term of gas cost by simply using named return values as temporary local variable.
+
+For instance, the code block below may be refactored as follows:
+
+[File: Deployer.sol#L102-L249](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L102-L249)
+
+```diff
+    function deploy(
+        string memory name,
+        string memory symbol,
+        string calldata mandate,
+        address owner,
+        DeploymentParams memory params
+-    ) external returns (address) {
++    ) external returns (address rTokenAddr) {
+
+        [ ... ]
+
+-        return (address(components.rToken));
++        rTokenAddr = address(components.rToken);
+    }
+```
+## += and -= cost more gas
+`+=` and `-=` generally cost 22 more gas than writing out the assigned equation explicitly. The amount of gas wasted can be quite sizable when repeatedly operated in a loop.
+
+For instance, the `+=` instance below may be refactored as follows:
+
+[File: RToken.sol#L330](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L330)
+
+```diff
+-            liabilities[IERC20(erc20s[i])] += deposits[i];
++            liabilities[IERC20(erc20s[i])] = liabilities[IERC20(erc20s[i])] + deposits[i];
+```
+## Ternary over `if ... else`
+Using ternary operator instead of the if else statement saves gas.
+
+For instance, the code block below may be refactored as follows:
+
+[File: RToken.sol#L392-L396](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L392-L396)
+
+```
+ earliest
+     ? refundSpan(account, queue.left, endId)
+     : refundSpan(account, endId, queue.right);
+```    
+## Local variable not fully utilized
+The input parameter, `val`, in `setUnstakingDelay()` and `setRewardPeriod()` of StRSR.sol could have been used in the second require statement to separately save 1 SLOAD on `unstakingDelay`:
+
+[File: StRSR.sol#L812-L825](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L812-L825)
+
+```diff
+    function setUnstakingDelay(uint48 val) public governance {
+        require(val > 0 && val <= MAX_UNSTAKING_DELAY, "invalid unstakingDelay");
+        emit UnstakingDelaySet(unstakingDelay, val);
+        unstakingDelay = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
++        require(rewardPeriod * 2 <= val, "unstakingDelay/rewardPeriod incompatible");
+    }
+
+    /// @custom:governance
+    function setRewardPeriod(uint48 val) public governance {
+        require(val > 0 && val <= MAX_REWARD_PERIOD, "invalid rewardPeriod");
+        emit RewardPeriodSet(rewardPeriod, val);
+        rewardPeriod = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
++        require(val * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+    }
+```
+## Early checks
+Checks in a function logic should be as early as possible to minimize gas waste in the event of a revert.
+
+For instance, the same instances in the preceding issue with the input parameter, `val`, fully utilized should have been refactored as follows:
+
+[File: StRSR.sol#L812-L825](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L812-L825) 
+
+```diff
+    function setUnstakingDelay(uint48 val) public governance {
+        require(val > 0 && val <= MAX_UNSTAKING_DELAY, "invalid unstakingDelay");
++        require(rewardPeriod * 2 <= val, "unstakingDelay/rewardPeriod incompatible");
+        emit UnstakingDelaySet(unstakingDelay, val);
+        unstakingDelay = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+    }
+
+    /// @custom:governance
+    function setRewardPeriod(uint48 val) public governance {
+        require(val > 0 && val <= MAX_REWARD_PERIOD, "invalid rewardPeriod");
++        require(val * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+        emit RewardPeriodSet(rewardPeriod, val);
+        rewardPeriod = val;
+-        require(rewardPeriod * 2 <= unstakingDelay, "unstakingDelay/rewardPeriod incompatible");
+    }
+```
+## Payable access control functions costs less gas
+Consider marking functions with access control as `payable`. This will save 20 gas on each call by their respective permissible callers for not needing to have the compiler check for `msg.value`.
+
+For instance, the function below may be refactored as follows:
+
+[File: BackingManager.sol#L256](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L256)
+
+```diff
+-    function setTradingDelay(uint48 val) public governance {
++    function setTradingDelay(uint48 val) public payable governance {
+```
+## Function order affects gas consumption
+The order of function will also have an impact on gas consumption. Because in smart contracts, there is a difference in the order of the functions. Each position will have an extra 22 gas. The order is dependent on method ID. So, if you rename the frequently accessed function to more early method ID, you can save gas cost. Please visit the following site for further information:
+
+https://medium.com/joyso/solidity-how-does-function-name-affect-gas-consumption-in-smart-contract-47d270d8ac92
+
+## Activate the optimizer
+Before deploying your contract, activate the optimizer when compiling using “solc --optimize --bin sourceFile.sol”. By default, the optimizer will optimize the contract assuming it is called 200 times across its lifetime. If you want the initial contract deployment to be cheaper and the later function executions to be more expensive, set it to “ --optimize-runs=1”. Conversely, if you expect many transactions and do not care for higher deployment cost and output size, set “--optimize-runs” to a high number.
+
+```
+module.exports = {
+solidity: {
+version: "0.8.16",
+settings: {
+  optimizer: {
+    enabled: true,
+    runs: 1000,
+  },
+},
+},
+};
+```
+Please visit the following site for further information:
+
+https://docs.soliditylang.org/en/v0.5.4/using-the-compiler.html#using-the-commandline-compiler
+
+Here's one example of instance on opcode comparison that delineates the gas saving mechanism:
+
+```
+for !=0 before optimization
+PUSH1 0x00
+DUP2
+EQ
+ISZERO
+PUSH1 [cont offset]
+JUMPI
+
+after optimization
+DUP1
+PUSH1 [revert offset]
+JUMPI
+```
+Disclaimer: There have been several bugs with security implications related to optimizations. For this reason, Solidity compiler optimizations are disabled by default, and it is unclear how many contracts in the wild actually use them. Therefore, it is unclear how well they are being tested and exercised. High-severity security issues due to optimization bugs have occurred in the past . A high-severity bug in the emscripten -generated solc-js compiler used by Truffle and Remix persisted until late 2018. The fix for this bug was not reported in the Solidity CHANGELOG. Another high-severity optimization bug resulting in incorrect bit shift results was patched in Solidity 0.5.6. Please measure the gas savings from optimizations, and carefully weigh them against the possibility of an optimization-related bug. Also, monitor the development and adoption of Solidity compiler optimizations to assess their maturity.
