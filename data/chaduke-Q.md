@@ -15,3 +15,11 @@ We need to use ``RoundingMode.CEIL`` here:
 totalSupply() > 0 ? mulDiv(basketsNeeded, amtRToken, totalSupply(), RoundingMode.CEIL)
 
 ``` 
+
+QA5. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L76
+Wrong implementation, ``lastIssRate`` is {rTok/block} not D18{rTok/block}! See the implementation below: 
+```
+lastIssRate = uint192((issuanceRate * totalSupply()) / FIX_ONE);
+
+```
+
