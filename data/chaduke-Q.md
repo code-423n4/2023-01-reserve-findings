@@ -33,3 +33,14 @@ If(left < queue.left || right > queue.right || left > right) revert LeftRightOut
 QA7. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L24
 Wrong documentation here. It should be D18{1/hour} instead of {1/hour}. 
 
+
+QA8. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RewardableLib.sol#L67-L69
+``sweepRewards()`` cannot sweep excessive ERC20 rewards if one of them has a low balance that is smaller then their corresponding liabilities. This is a weakness. We should allow ``sweepRewards()`` to sweepthe rest of the ERC tokens if they have excessive balances even though one ERC20 has a low balance. The fix is below:
+```
+// Calculate deltas
+        for (uint256 i = 0; i < erc20sLen; ++i) {
+             if(erc20s[i].balanceOf(address(this))  >   liabilities[erc20s[i]])          // skipping those who might underflow
+                        deltas[i] = erc20s[i].balanceOf(address(this)) - liabilities[erc20s[i]]; // {qTok}; 
+        }
+
+```
