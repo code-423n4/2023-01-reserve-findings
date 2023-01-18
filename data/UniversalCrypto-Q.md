@@ -11,7 +11,7 @@ If the user submits `endId` in this case `if (queue.left == endId) return;` the 
 
 Non Critical:
 
-1. Use msg.sender if the code does not implement EIP-2771 trusted forwarder support.
+1. Use msg.sender instead _msgSender() if the code does not implement EIP-2771 trusted forwarder support.
 
 
 
