@@ -30,3 +30,6 @@ If(left < queue.left || right > queue.right || left > right) revert LeftRightOut
 
 ```
 
+QA7. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L24
+Wrong documentation here. It should be D18{1/hour} instead of {1/hour}. 
+
