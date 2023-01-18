@@ -44,3 +44,9 @@ QA8. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b3
         }
 
 ```
+
+QA9. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L571
+Revise it to to incude the ``from`` field:
+```
+emit Melted(msg.sender, amtRToken);
+```
