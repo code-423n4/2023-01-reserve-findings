@@ -100,3 +100,9 @@ Introducing a variable ``newLastIssRate`` here can save gas so that we do not ne
 
 ```
 
+G13. 
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L64
+Enclosing it inside unchecked as underflow is impossible here:
+```
+uint48 blocks = uint48(block.number) - battery.lastBlock;
+```
