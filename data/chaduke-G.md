@@ -123,3 +123,24 @@ battery.lastCharge = charge - amount;
 
 G16. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L491
 Moving this line to an earlier line (L462) can save gas to ensure ``amount`` is not too big. 
+
+G17. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L500-L513
+This all-zero-test is used to revert the function when all amounts[i] =0. To save gas, this check can be done in the previous for loop when amounts[i] is first calculated. Such short-circuit can save gas.
+```
+bool allZero = true;
+for (uint256 i = 0; i < erc20length; ++i) {
+            // {qTok}
+            uint256 bal = IERC20Upgradeable(erc20s[i]).balanceOf(address(backingManager));
+
+            // gas-optimization: only do the full mulDiv256 if prorate is 0
+            uint256 prorata = (prorate > 0)
+                ? (prorate * bal) / FIX_ONE // {qTok} = D18{1} * {qTok} / D18
+                : mulDiv256(bal, amount, supply); // {qTok} = {qTok} * {qRTok} / {qRTok}
+
+            if (prorata < amounts[i]) amounts[i] = prorata;
+            if(amounts[i] != 0) allZero = false; // audit: check all-zero            
+}
+
+if (allZero) revert("Empty redemption"); // short-circuit, no need to call _burn()
+             
+```
