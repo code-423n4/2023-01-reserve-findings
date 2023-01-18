@@ -18,3 +18,6 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 source:
 https://github.com/code-423n4/2022-01-livepeer-findings/issues/112
+
+the same problem solved here :
+https://github.com/code-423n4/2023-01-astaria/blob/1bfc58b42109b839528ab1c21dc9803d663df898/src/CollateralToken.sol#L86
