@@ -50,3 +50,15 @@ Revise it to to incude the ``from`` field:
 ```
 emit Melted(msg.sender, amtRToken);
 ```
+
+QA10. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L615-L618
+``val`` cannot be exceeding ``totalSupply()`` to be effective, this is because: for function ``currentCharge()``, the returned ``charge = min(totalSupply(), amtPerHour, calculatedCharge)``, and ``amtPerHour >= battery.redemptionRateFloor``. In summary, ``val`` cannot be exceeding ``totalSupply()`` to be effective, otherwise, it will become useless. To fix, we add a check below: 
+
+```
+function setRedemptionRateFloor(uint256 val) public governance {
+       if(val > totalSupply()} revert RedemptionRateFloorTooLarge(); // @audit
+
+        emit RedemptionRateFloorSet(battery.redemptionRateFloor, val);
+        battery.redemptionRateFloor = val;
+    }
+```
