@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "severity",
+  "risk": "2",
+  "title": "External calls in a loop may revert for one ERC20 inside RewardableLibP1.sweepRewards()",
+  "issueId": 183,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/183"
+}
