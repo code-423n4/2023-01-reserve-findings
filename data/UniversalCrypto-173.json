@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "UniversalCrypto",
+  "risk": "2",
+  "title": "missing initializer modifier",
+  "issueId": 173,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/173"
+}
