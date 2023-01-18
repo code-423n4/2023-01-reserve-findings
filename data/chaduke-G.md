@@ -120,3 +120,6 @@ Enclosing it inside unchecked to save gas since there is a check already at L44.
 battery.lastCharge = charge - amount;
 
 ```
+
+G16. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L491
+Moving this line to an earlier line (L462) can save gas to ensure ``amount`` is not too big. 
