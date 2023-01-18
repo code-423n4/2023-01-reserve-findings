@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "rvierdiiev",
+  "risk": "3",
+  "title": "User that stakes after seizeRSR call can mint more StRSR token for less amount of RSR and take advantage of it in voting",
+  "issueId": 160,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/160"
+}
