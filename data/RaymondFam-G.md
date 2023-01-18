@@ -71,6 +71,35 @@ As an example, the instance below may be refactored as follows:
 -        if (address(trade.sell) == address(0) && address(trade.buy) != address(0)) {
 +        if (!(address(trade.sell) != address(0) || address(trade.buy) == address(0))) {
 ```
+## Early if block
+In `melt()` of Furnace.sol, the last if block should be executed before `lastPayoutBal` is updated. In the event `amount == 0` due to `ratio == 0`, the function could end with a return and save some gas.
+
+[File: Furnace.sol#L70-L84](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L70-L84)
+
+```diff
+    function melt() external notPausedOrFrozen {
+        if (uint48(block.timestamp) < uint64(lastPayout) + period) return;
+
+        // # of whole periods that have passed since lastPayout
+        uint48 numPeriods = uint48((block.timestamp) - lastPayout) / period;
+
+        // Paying out the ratio r, N times, equals paying out the ratio (1 - (1-r)^N) 1 time.
+        uint192 payoutRatio = FIX_ONE.minus(FIX_ONE.minus(ratio).powu(numPeriods));
+
+        uint256 amount = payoutRatio.mulu_toUint(lastPayoutBal);
+
+        lastPayout += numPeriods * period;
+
++        if (amount == 0) {
++            return;
++        else {
++            rToken.melt(amount);
++        }
+
+        lastPayoutBal = rToken.balanceOf(address(this)) - amount;
+-        if (amount > 0) rToken.melt(amount);
+    }
+```
 ## Unchecked SafeMath saves gas
 "Checked" math, which is default in ^0.8.0 is not free. The compiler will add some overflow checks, somehow similar to those implemented by `SafeMath`. While it is reasonable to expect these checks to be less expensive than the current `SafeMath`, one should keep in mind that these checks will increase the cost of "basic math operation" that were not previously covered. This particularly concerns variable increments in for loops. When no arithmetic overflow/underflow is going to happen, `unchecked { ++i ;}` to use the previous wrapping behavior further saves gas just as in the for loop below as an example:
 
