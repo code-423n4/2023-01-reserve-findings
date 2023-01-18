@@ -10,12 +10,15 @@
 | L-06      | Only disable basket if new asset is not the same as old asset | contracts/p1/AssetRegistry.sol | 1 |
 | L-07      | Use `lotLow` price instead of `low` price to calculate total asset value | contracts/p1/mixins/RecollateralizationLib.sol | 1 |
 | L-08      | Round with mode `FLOOR` instead of `CEIL` in calculation of `range.bottom` | contracts/p1/mixins/RecollateralizationLib.sol | 1 |
+| L-09      | Sending `sell` or `buy` tokens to `GnosisTrade` contract such that `reportViolation` is not called | contracts/plugins/trading/GnosisTrade.sol | 1 |
+| L-10      | `minBuyAmountPerOrder` calculation should be based on asset value not token fraction | contracts/plugins/trading/GnosisTrade.sol | 1 |
 | N-01      | No need to access components via `Main` | - | 4 |
 | N-02      | Use Solidity units when possible | contracts/p1/Broker.sol | 1 |
 | N-03      | Redundant code | contracts/p1/RToken.sol | 1 |
 | N-04      | Consider adding functionality to restake drafted withdrawal | contracts/p1/StRSR.sol | 1 |
 | N-05      | Consider implementing asymmetric peg range | contracts/plugins/assets/FiatCollateral.sol | 1 |
 | N-06      | Consider leaving the basket `DISABLED` when it has `IFFY` collateral and allowing redemption when basket is `DISABLED` | - | - |
+| N-07      | Use `IStRSRVotes` instead of `IStRSR` interface | contracts/p1/Deployer.sol | - |
 
 ## [L-01] Check that `longFreeze >= shortFreeze`
 The `docs/system-design.md` documentation states that:  
@@ -156,6 +159,38 @@ range.bottom = fixMin(assetsLow.div(basketPriceHigh, CEIL), range.top);
 
 The calculation is using rounding mode `CEIL`. This is wrong because `range.bottom` represents the low value of the range. Therefore the calculation should round down, i.e. use rounding mode `FLOOR`.  
 
+## [L-09] Sending `sell` or `buy` tokens to `GnosisTrade` contract such that `reportViolation` is not called
+The `GnosisTrade` contract calls `Broker.reportViolation` when the `clearingPrice` is less than the `worstCasePrice`:  
+
+[https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L206-L208](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L206-L208)  
+
+This disables the `Broker` such that no new trades can be opened until the issue is resolved by governance.  
+
+In a case where the `GnosisTrade` contract would call `Broker.reportViolation` this can be avoided by sending `sell` tokens or `buy` tokens (possible a very small amount is sufficient) to the `GnosisTrade` contract.  
+
+This behavior can prevent governance and the protocol from noticing an issue as it emerges (maybe a small amount of funds can manipulate the price sufficiently to keep the protocol going). The governance then only notices the problem as it gets worse.  
+
+The sold amount and bought amount should be queried from the `EasyAuction` contract directly instead of relying on the `GnosisTrade` contract balance.  
+
+## [L-10] `minBuyAmountPerOrder` calculation should be based on asset value not token fraction
+The `minBuyAmountPerOrder` in the `GnosisTrade.init` function is calculated like this:  
+
+[https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L123-L126](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L123-L126)  
+
+```solidity
+uint256 minBuyAmtPerOrder = Math.max(
+    minBuyAmount / MAX_ORDERS,
+    DEFAULT_MIN_BID.shiftl_toUint(int8(buy.decimals()))
+);
+```
+
+So it is at least as big as `DEFAULT_MIN_BID.shiftl_toUint(int8(buy.decimals()))`, and `DEFAULT_MIN_BID` is one hundredth of a token ([https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L34](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L34)).  
+
+This amount can cause problems for some tokens like WBTC. Currently one hundredth of one WBTC is worth >$200.  
+
+If the assets sold are worth only $100 then nobody is going to buy for $200.  
+
+I suggest the `minBuyAmountPerOrder` to be calculated based on the value of the asset that is sold in case the asset can be priced. Only in the case that the asset is unpriced must there be a fallback mechanism.  
 
 ## [N-01] No need to access components via `Main`
 All components of the protocol are registered in the `Main` contract. It is not always necessary to access components by calling the `Main` contract first.  
@@ -229,3 +264,17 @@ There is no vulnerability with the current behavior but it might be beneficial t
 
 The sponsor should therefore further assess the proposed change and implement it if it is beneficial.  
 
+## [N-07] Use `IStRSRVotes` instead of `IStRSR` interface
+The `Deployer` is used to deploy an instance of a RToken.  
+
+This is achieved by cloning an implementation contract of each contract that is needed.  
+
+One of the contracts is called `stRSR` and it must implement the `IStRSR` interface:  
+
+[https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L121](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L121)  
+
+This is too permissive though because there are two contracts that implement the `IStRSR` interface: `StRSR` and `StRSRVotes`.  
+
+The RToken protocol however requires that the contract is `StRSRVotes` not `StRSR` (voting capabilities are needed for governance).  
+
+The `Deployer` contract therefore should use `IStRSRVotes` instead of `IStRSR` such that the implementation contract must implement `IStRSRVotes`.  
