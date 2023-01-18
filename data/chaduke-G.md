@@ -113,3 +113,10 @@ So the following code is sufficient and will save gas:
 ```
 if (charge > amtPerHour) charge = amtPerHour;
 ```
+
+G15. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L48
+Enclosing it inside unchecked to save gas since there is a check already at L44.
+```
+battery.lastCharge = charge - amount;
+
+```
