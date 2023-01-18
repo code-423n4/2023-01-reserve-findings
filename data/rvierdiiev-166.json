@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "rvierdiiev",
+  "risk": "2",
+  "title": "Governance._getVotes can be 0 because of rounding",
+  "issueId": 166,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/166"
+}
