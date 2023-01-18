@@ -32,6 +32,32 @@ Here are some of the instances entailed:
 
               [ ... ]
 ```
+## Merging of if blocks
+In `price()` of OracleLib.sol, the two if blocks can be merged as follows to save gas both on contract size and function calls:
+
+[File: OracleLib.sol#L14-L31](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/OracleLib.sol#L14-L31)
+
+```diff
+    function price(AggregatorV3Interface chainlinkFeed, uint48 timeout)
+        internal
+        view
+        returns (uint192)
+    {
+        (uint80 roundId, int256 p, , uint256 updateTime, uint80 answeredInRound) = chainlinkFeed
+            .latestRoundData();
+
+-        if (updateTime == 0 || answeredInRound < roundId) {
++        if (uint48(block.timestamp - updateTime) > timeOut || answeredInRound < roundId) {
+            revert StalePrice();
+        }
+        // Downcast is safe: uint256(-) reverts on underflow; block.timestamp assumed < 2^48
+-        uint48 secondsSince = uint48(block.timestamp - updateTime);
+-        if (secondsSince > timeout) revert StalePrice();
+
+        // {UoA/tok}
+        return shiftl_toFix(uint256(p), -int8(chainlinkFeed.decimals()));
+    }
+```
 ## `||` costs less gas than its equivalent `&&`
 Rule of thumb: `(x && y)` is `(!(!x || !y))`
 
@@ -249,3 +275,25 @@ PUSH1 [revert offset]
 JUMPI
 ```
 Disclaimer: There have been several bugs with security implications related to optimizations. For this reason, Solidity compiler optimizations are disabled by default, and it is unclear how many contracts in the wild actually use them. Therefore, it is unclear how well they are being tested and exercised. High-severity security issues due to optimization bugs have occurred in the past . A high-severity bug in the emscripten -generated solc-js compiler used by Truffle and Remix persisted until late 2018. The fix for this bug was not reported in the Solidity CHANGELOG. Another high-severity optimization bug resulting in incorrect bit shift results was patched in Solidity 0.5.6. Please measure the gas savings from optimizations, and carefully weigh them against the possibility of an optimization-related bug. Also, monitor the development and adoption of Solidity compiler optimizations to assess their maturity.
+
+## Use assembly to check for address(0)
+Using assembly to check for address(0) saves 6 gas for each instance.
+
+As an example, the following instance may be refactored as follows:
+
+[File: ComponentRegistry.sol#L36-L40](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/ComponentRegistry.sol#L36-L40)
+
+```diff
+    function _setRToken(IRToken val) private {
+-        require(address(val) != address(0), "invalid RToken address");
+
++        assembly {
++            if iszero(address(val)) {
++                mstore(0x00, "invalid RToken address")
++                revert(0x00, 0x20)
++            }
+
+        emit RTokenSet(rToken, val);
+        rToken = val;
+    }
+```
