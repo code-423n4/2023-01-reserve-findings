@@ -9,6 +9,7 @@
 | [L-05] | Payout may be too soon                                                             | 1             |
 | [L-06] | Integer overflow by unsafe casting                                                 | 11            |
 | [L-07] | Allows malleable `SECP256K1` signatures                                            | 3             |
+| [L-08] | Inconsistent validation of input                                                   | 1             |
 
 ### Total NC issues
 
@@ -198,6 +199,81 @@ Homestead [(EIP-2)](https://eips.ethereum.org/EIPS/eip-2) added this limitation,
 ### Recommended Mitigation Steps
 
 Use OpenZeppelin's `ECDSA` library for signature verification.
+
+## [L-08] Inconsistent validation of input    
+
+While the `setPrimeBasket()` function check that `erc20s.length > 0`, the `setBackupConfig()` does not.
+
+if the caller calls `setBackupConfig()` with `erc20s.length = 0 ` by mistake, it will update the `targetName` and `config.max` and delete the `conf.erc20s` array without updating it to a new value.  
+
+```solidity
+    function setPrimeBasket(IERC20[] calldata erc20s, uint192[] calldata targetAmts)
+        external
+        governance
+    {
+        require(erc20s.length > 0, "cannot empty basket");
+        require(erc20s.length == targetAmts.length, "must be same length");
+        requireValidCollArray(erc20s);
+
+        // Clean up previous basket config
+        for (uint256 i = 0; i < config.erc20s.length; ++i) {
+            delete config.targetAmts[config.erc20s[i]];
+            delete config.targetNames[config.erc20s[i]];
+        }
+        delete config.erc20s;
+
+        // Set up new config basket
+        bytes32[] memory names = new bytes32[](erc20s.length);
+
+        for (uint256 i = 0; i < erc20s.length; ++i) {
+            // This is a nice catch to have, but in general it is possible for
+            // an ERC20 in the prime basket to have its asset unregistered.
+            require(assetRegistry.toAsset(erc20s[i]).isCollateral(), "token is not collateral");
+            require(0 < targetAmts[i], "invalid target amount; must be nonzero");
+            require(targetAmts[i] <= MAX_TARGET_AMT, "invalid target amount; too large");
+
+            config.erc20s.push(erc20s[i]);
+            config.targetAmts[erc20s[i]] = targetAmts[i];
+            names[i] = assetRegistry.toColl(erc20s[i]).targetName();
+            config.targetNames[erc20s[i]] = names[i];
+        }
+
+        emit PrimeBasketSet(erc20s, targetAmts, names);
+    }
+
+    function setBackupConfig(
+        bytes32 targetName,
+        uint256 max,
+        IERC20[] calldata erc20s
+    ) external governance {
+        requireValidCollArray(erc20s);
+        BackupConfig storage conf = config.backups[targetName];
+        conf.max = max;
+        delete conf.erc20s;
+
+        for (uint256 i = 0; i < erc20s.length; ++i) {
+            // This is a nice catch to have, but in general it is possible for
+            // an ERC20 in the backup config to have its asset altered.
+            require(assetRegistry.toAsset(erc20s[i]).isCollateral(), "token is not collateral");
+            conf.erc20s.push(erc20s[i]);
+        }
+        emit BackupConfigSet(targetName, max, erc20s);
+    }
+
+```
+
+### Lines of code 
+
+- [BasketHandler.sol:209](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L209-L241)
+- [BasketHandler.sol:252](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L252-L269)
+
+### Recommended Mitigation Steps
+
+Add this check to `setBackupConfig()` function:
+
+```solidity
+        require(erc20s.length > 0);
+```
 
 ## [NC-01] Use `require()` instead of `assert()`
 
