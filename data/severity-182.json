@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "severity",
+  "risk": "3",
+  "title": "Malicious Asset can execute code in core security domain and get the full control over the protocol",
+  "issueId": 182,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/182"
+}
