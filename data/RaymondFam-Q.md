@@ -5,6 +5,18 @@
 - *   - usually (but not always) contain sizeable state that require a proxy
 + *   - usually (but not always) contain sizable state that requires a proxy
 ```
+[File: Auth.sol#L22](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L22)
+
+```diff
+-     * Typically freezing thaws on its own in a predetemined number of blocks.
++     * Typically freezing thaws on its own in a predetermined number of blocks.
+```
+[File: Furnace.sol#L66](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L66)
+
+```diff
+-    //   lastPayoutBal' = rToken.balanceOf'(this) (balance now == at end of pay leriod)
++    //   lastPayoutBal' = rToken.balanceOf'(this) (balance now == at end of pay period)
+```
 ## Modularity on import usages
 For cleaner Solidity code in conjunction with the rule of modularity and modular programming, use named imports with curly braces instead of adopting the global import approach.
 
@@ -189,7 +201,7 @@ For instance, a modifier for the identical require statement in `setUnstakingDel
     }
 ```
 ## Missing check on negative price
-`price()` in OracleLib.sol should have a check for negative price as follows:
+`price()` in OracleLib.sol should have a check for negative price. The revert will also prevent an underflow in the return statement when casting a negative integer to `uint256()`. 
 
 [File: OracleLib.sol#L14-L31](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/OracleLib.sol#L14-L31) 
 
@@ -211,9 +223,85 @@ For instance, a modifier for the identical require statement in `setUnstakingDel
         uint48 secondsSince = uint48(block.timestamp - updateTime);
         if (secondsSince > timeout) revert StalePrice();
 
-+        if (p < 0) revert NegativePrice();    
++        if (p < 0) revert NegativePrice(); //
 
         // {UoA/tok}
         return shiftl_toFix(uint256(p), -int8(chainlinkFeed.decimals()));
     }
+```
+## Workaround for solhint-disable-next-line no-empty-blocks
+The constructor in Main.sol can be rewritten as follows to silence any warning flag without the need for the commented "solhint-disable-next-line no-empty-blocks".
+
+Note: This feature is readily incorporated in the Solidity Wizard since the UUPS vulnerability discovery. You would just need to [check UPGRADEABILITY](https://wizard.openzeppelin.com/) to have the following constructor code block added to the contract:
+
+[File: Main.sol#L21-L23](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Main.sol#L21-L23)
+
+```diff
+    /// @custom:oz-upgrades-unsafe-allow constructor
+-    // solhint-disable-next-line no-empty-blocks
+-    constructor() initializer {}
++    constructor() {
++        _disableInitializers();
++    }
+```
+## Inappropriate comments
+Consider rewriting the first line of comments on `freezeForever()` as follows:
+
+Note: `permanent` means lasting or intended to last or remain unchanged indefinitely. But quite the opposite, the permanent freeze can always be thawed via `unfreeze()` and refrozen via  `freeUntil()`.
+
+[File: Auth.sol#L143-L150](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L143-L150)
+
+```diff
+-    /// Enter a permanent freeze
++    /// Enter an indefinite freeze
+    // checks:
+    // - caller has the OWNER role
+    // - unfreezeAt != type(uint48).max
+    // effects: unfreezeAt' = type(uint48).max
+    function freezeForever() external onlyRole(OWNER) {
+        freezeUntil(MAX_UNFREEZE_AT);
+    }
+```
+## Unneeded comment
+Underflow due to decrementing `longFreezes[_msgSender()]` in `freezeLong()` of Auth.sol will never happen because `_msgSender()`  has already got its `LONG-FREEZER` role revoked when `longFreezes[_msgSender()] == 0`. This makes it impossible to reach the first line of the function logic.
+
+[File: Auth.sol#L135-L141](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L135-L141) 
+
+```diff
+    function freezeLong() external onlyRole(LONG_FREEZER) {
+-        longFreezes[_msgSender()] -= 1; // reverts on underflow
++        longFreezes[_msgSender()] -= 1; // No underflow would transpire. Apply unchecked { ... } if need be.
+
+        // Revoke on 0 charges as a cleanup step
+        if (longFreezes[_msgSender()] == 0) _revokeRole(LONG_FREEZER, _msgSender());
+        freezeUntil(uint48(block.timestamp) + longFreeze);
+    }
+```
+## Inadequate boundary check
+`longFreeze` should not only be greater than zero but also greater than `MAX_SHORT_FREEZE` or `shortfreeze` to be feasibly practical. Otherwise, it could likely end up having `shortFreeze > longFreeze`, making `freezeLong()` to readily revert (due to [`newUnfreezeAt < unfreezeAt`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L197)) if `freezeShort()` had been invoked not too long ago. 
+
+Consider having `setLongFreeze()` refactored as follows:
+
+```diff
+    function setLongFreeze(uint48 longFreeze_) public onlyRole(OWNER) {
+-        require(longFreeze_ > 0 && longFreeze_ <= MAX_LONG_FREEZE, "long freeze out of range");
++        require(longFreeze_ > shortFreeze && longFreeze_ <= MAX_LONG_FREEZE, "long freeze out of range");
+        emit LongFreezeDurationSet(longFreeze, longFreeze_);
+        longFreeze = longFreeze_;
+    }
+```
+Better yet, set a reasonable threshold so that `longFreeze_ > shortFreeze + threshold` to further minimize edge cases.
+
+## Empty Event
+The following event has no parameter in it to emit anything. Although the standard global variables like block.number and block.timestamp will implicitly be tagged along, consider adding some relevant parameters to the make the best out of this emitted event for better support of off-chain logging API.
+
+[File: IMain.sol#L154](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IMain.sol#L154)
+
+```solidity
+    event MainInitialized();
+```
+[File: Main.sol#L38](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Main.sol#L38)
+
+```solidity
+        emit MainInitialized();
 ```
