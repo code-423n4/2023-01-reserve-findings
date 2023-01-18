@@ -7,27 +7,33 @@
 | [L-03] | `call()` should be used instead of `transfer()`                                    | 1             |
 | [L-04] | `init()` function can be called by anyone                                          | 12            |
 | [L-05] | Payout may be too soon                                                             | 1             |
-| [L-06] | Integer overflow by unsafe casting                                                 | 0             |
+| [L-06] | Integer overflow by unsafe casting                                                 | 11            |
+| [L-07] | Allows malleable `SECP256K1` signatures                                            | 3             |
 
 ### Total NC issues
 
-| Number  | Issues Details                                                      | Context       |
-|---------|---------------------------------------------------------------------|---------------|
-| [NC-01] | Use `require()` instead of `assert()`                               | 20            |
-| [NC-02] | Constants in comparisons should appear on the left side             | 1             |
-| [NC-03] | Non-usage of specific imports                                       | All Contracts |
-| [NC-04] | The `nonReentrant` modifier should occur before all other modifiers | 1             |
-| [NC-05] | Use a more recent version of solidity                               | All Contracts |
-| [NC-06] | Typos                                                               | 4             |
-| [NC-07] | Include `@return` parameters in NatSpec comments                    | All Contracts |
-| [NC-08] | Contracts should have full test coverage                            | All Contracts |
-| [NC-09] | Function writing does not comply with the `Solidity Style Guide`    | All Contracts |
-| [NC-10] | Use `bytes.concat()` and `string.concat()`                          | 5             |
-| [NC-11] | Solidity compiler optimizations can be problematic                  | 1             |
-| [NC-12] | Mark visibility of `init()` functions as external                   | 2             |
-| [NC-13] | Value is not validated to be different than the existing one        | 13            |
-| [NC-14] | Lack of event emit                                                  | 2             |
-| [NC-15] | Signature Malleability of EVM's `ecrecover()`                       | 3             |
+| Number  | Issues Details                                                                   | Context       |
+|---------|----------------------------------------------------------------------------------|---------------|
+| [NC-01] | Use `require()` instead of `assert()`                                            | 20            |
+| [NC-02] | Constants in comparisons should appear on the left side                          | 10            |
+| [NC-03] | Non-usage of specific imports                                                    | All Contracts |
+| [NC-04] | The `nonReentrant` modifier should occur before all other modifiers              | 1             |
+| [NC-05] | Use a more recent version of solidity                                            | All Contracts |
+| [NC-06] | Typos                                                                            | 4             |
+| [NC-07] | Include `@return` parameters in NatSpec comments                                 | All Contracts |
+| [NC-08] | Contracts should have full test coverage                                         | All Contracts |
+| [NC-09] | Function writing does not comply with the `Solidity Style Guide`                 | All Contracts |
+| [NC-10] | Use `bytes.concat()` and `string.concat()`                                       | 5             |
+| [NC-11] | Solidity compiler optimizations can be problematic                               | 1             |
+| [NC-12] | Mark visibility of `init()` functions as external                                | 2             |  
+| [NC-13] | Value is not validated to be different than the existing one                     | 13            |
+| [NC-14] | Lack of event emit                                                               | 2             |
+| [NC-15] | Signature Malleability of EVM's `ecrecover()`                                    | 3             |
+| [NC-16] | Critical changes should use-two step procedure                                   | 1             |
+| [NC-17] | Add a timelock to critical functions                                             | 15            |
+| [NC-18] | Use `immutable` instead of `constant` for values such as a call to keccak256()   | 6             |
+| [NC-19] | Avoid shadowing inherited state variables                                        | 1             |
+| [NC-20] | `revert()` Statements Should Have Descriptive Reason Strings                     | 5             |
 
 
 ## [L-01] Low level calls with solidity version 0.8.14 and lower can result in optimiser bug
@@ -174,6 +180,24 @@ It is necessary to safely convert between the different numeric types.
 ### Recommended Mitigation Steps
 
 Use OpenZeppelin [safeCast](https://docs.openzeppelin.com/contracts/3.x/api/utils#SafeCast) library.
+
+## [L-07] Allows malleable `SECP256K1` signatures
+
+Here, the `ecrecover()` method doesn't check the `bytes32 s` range.
+
+Homestead [(EIP-2)](https://eips.ethereum.org/EIPS/eip-2) added this limitation, however the precompile remained unaltered. The majority of libraries, including OpenZeppelin, do this check.
+
+> Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/7201e6707f6631d9499a569f492870ebdd4133cf/contracts/utils/cryptography/ECDSA.sol#L138-L149
+
+### Lines of code
+
+- [StaticATokenLM.sol:155](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L155)
+- [StaticATokenLM.sol:193](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L193)
+- [StaticATokenLM.sol:234](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L234)
+
+### Recommended Mitigation Steps
+
+Use OpenZeppelin's `ECDSA` library for signature verification.
 
 ## [NC-01] Use `require()` instead of `assert()`
 
@@ -475,3 +499,117 @@ Although a replay attack seems not possible for this contract, I recommend using
 ### Recommended Mitigation Steps
 
 Use the ecrecover function from OpenZeppelin's ECDSA library for signature verification. (Ensure using a version > 4.7.3 for there was a critical bug >= 4.1.0 < 4.7.3).
+
+## [NC-16] Critical changes should use-two step procedure  
+
+The `Main.sol` inherits Openzeppelin `OwnableUpgradeable.sol` contract, which does not have a two-step procedure for critical changes.
+
+```solidity
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public virtual onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        _transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Internal function without access restriction.
+     */
+    function _transferOwnership(address newOwner) internal virtual {
+        address oldOwner = _owner;
+        _owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
+    }
+```
+
+### Lines of code 
+
+- [Main.sol:6](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Main.sol#L6)
+
+### Recommended Mitigation Steps
+
+Consider adding two step procedure on the critical functions where the first is announcing a pending new owner and the new address should then claim its ownership.
+
+## [NC-17] Add a timelock to critical functions
+
+It is a good practice to give time for users to react and adjust to critical changes. A timelock provides more guarantees and reduces the level of trust required, thus decreasing risk for users. It also indicates that the project is legitimate.
+
+### Lines of code
+
+- [Trading.sol:128](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L128)
+- [Trading.sol:135](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L135)
+- [StRSR.sol:812](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L812)
+- [StRSR.sol:820](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L820)
+- [StRSR.sol:828](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L828)
+- [RToken.sol:579](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L579)
+- [RToken.sol#L589](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L589)
+- [RToken.sol:602](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L602)
+- [RToken.sol:615](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L615)
+- [Furnace.sol:88](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L88)
+- [Furnace.sol:96](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L96)
+- [BackingManager.sol:256](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L256)
+- [BackingManager.sol:263](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L263)
+- [StRSR.sol:80](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L803)
+- [StRSR.sol:807](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L807)
+
+### Recommended Mitigation Steps
+
+Consider adding a timelock to the critical changes.
+
+## [NC-18] Expressions for constant values such as a call to keccak256(), should use immutable rather than constant
+
+While it doesn't save any gas because the compiler knows that developers often make this mistake, it's still best to use the right tool for the task at hand. There is a difference between constant variables and immutable variables, and they should each be used in their appropriate contexts. constants should be used for literal values written into the code, and immutable variables should be used for expressions, or values calculated in, or passed into the constructor.
+
+### Lines of code 
+
+- [StaticATokenLM.sol:41](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/aave/StaticATokenLM.sol#L41-L44)
+- [StaticATokenLM.sol:45](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/aave/StaticATokenLM.sol#L45-L48)
+- [StaticATokenLM.sol:49](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/aave/StaticATokenLM.sol#L49-L52)
+- [StaticATokenLM.sol:53](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/aave/StaticATokenLM.sol#L53-L56)
+- [StRSRVotes.sol:27](https://github.com/reserve-protocol/protocol/blob/master/contracts/p1/StRSRVotes.sol#L27-L28)
+- [StRSR.sol:126](https://github.com/reserve-protocol/protocol/blob/master/contracts/p1/StRSR.sol#L126-L129)
+
+### Recommended Mitigation Steps
+
+Use `immutable` instead of `constants` 
+
+## [NC-19] Avoid shadowing inherited state variables  
+
+In `CTokenFiatCollateral .sol` there is a local variable named `erc20`, but there is a state variable named `erc20` in the inherited `Asset .sol` with the same name. This use causes compilers to issue warnings, negatively affecting checking and code readability.
+
+```solidity
+        ICToken erc20 = ICToken(address(config.erc20));
+        referenceERC20Decimals = IERC20Metadata(erc20.underlying()).decimals();
+```
+
+```solidity
+        IERC20Metadata public immutable erc20;
+```
+
+### Lines of code 
+
+- [CTokenFiatCollateral.sol:27](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/assets/CTokenFiatCollateral.sol#L27-L28)
+- [Asset.sol:15](https://github.com/reserve-protocol/protocol/blob/master/contracts/plugins/assets/Asset.sol#L15)
+
+### Recommended Mitigation Steps
+
+Avoid using variables with the same name.
+
+## [NC-20] `revert()` Statements Should Have Descriptive Reason Strings
+
+The correct and clear error description explains to the user why the function reverts, but the error descriptions below in the project are not self-explanatory. These error descriptions are very important in the debug features of DApps like Tenderly.
+
+### Lines of code
+
+- [RTokenAsset.sol:78](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/RTokenAsset.sol#L78)
+- [FiatCollateral.sol:149](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/FiatCollateral.sol#L149)
+- [Asset.sol:102](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L102)
+- [Asset.sol:116](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L116)
+- [Asset.sol:133](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L133)
+
+### Recommended Mitigation Steps
+
+Error definitions should be added to the `revert("...")` block
