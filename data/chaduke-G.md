@@ -106,3 +106,10 @@ Enclosing it inside unchecked as underflow is impossible here:
 ```
 uint48 blocks = uint48(block.number) - battery.lastBlock;
 ```
+
+G14. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L69-L70
+There is no need to compare amtPerHour and supply since we always have amtPerHour <= supply according to L59. 
+So the following code is sufficient and will save gas:
+```
+if (charge > amtPerHour) charge = amtPerHour;
+```
