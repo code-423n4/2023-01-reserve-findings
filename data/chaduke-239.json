@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "chaduke",
+  "risk": "3",
+  "title": "setScalingRedemptionRate() might lead to the miscalucation of the charge value for the battery",
+  "issueId": 239,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/239"
+}
