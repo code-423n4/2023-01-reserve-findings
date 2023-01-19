@@ -132,3 +132,46 @@ It is possible to hold a signed `delegate()` across different eras.
 - Accept the risk
 - OR include `era` in the `structHash`
 - OR follow the recommendation in a seperate High risk issue titled "Bridged stRSR can lead to loss of funds" submitted by me.
+
+
+## `setRedemptionRateFloor(...)` should have checks
+
+The function does not currently have a bound for acceptable values
+```sol
+function setRedemptionRateFloor(uint256 val) public governance {
+	emit RedemptionRateFloorSet(battery.redemptionRateFloor, val);
+	battery.redemptionRateFloor = val;
+}
+```
+refer to `system-design.md` - RedemptionBattery:
+_"Either of the two variables can be defined to be zero to disable them"_
+...
+```md
+RedemptionBattery.redemptionRateFloor
+Dimension: {qRTok/hour}
+
+The redemption rate floor is the minimum quantity of RToken to allow redemption of per-hour, and thereby the rate to charge the redemption battery at.
+
+Default value: 1e24 = 1,000,000 RToken Mainnet reasonable range: 1e23 to 1e27
+```
+I think it is important that `redemptionRateFloor` cannot be set to zero, but instead require it to be `> 1e23`. If only `scalingRedemptionRate` is set, and `redemptionRateFloor` is disabled (zero), users can never redeem all RTokens since the amount redeemable is a percentage of totalSupply.
+
+^ The same problem as trying to reach the end of a room, but each step taken must be half the distance of the previous step.
+
+### Impact
+This **contradicts** a known ~~issue~~ behavior on the contest page
+
+_"The governance has the ability to freeze, and with long freezing enabled (default) it is possible for governance to soft-lock the backing for the duration of the freezing period by preventing the RToken holders from redeeming. **The idea is to turn off freezing capabilities couple months into RToken existence.**"_
+
+The last sentence suggests that governance should eventually not be able to soft-lock the backing.
+
+The ability to set `redemptionRateFloor` to zero/a small amount allows governance another way to soft-lock the backing without freezing capabilities.
+
+### Recommendations
+```sol
+function setRedemptionRateFloor(uint256 val) public governance {
++	require(val >= 1e23, "invalid amount");
+	emit RedemptionRateFloorSet(battery.redemptionRateFloor, val);
+	battery.redemptionRateFloor = val;
+}
+```
