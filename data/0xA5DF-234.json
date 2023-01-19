@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xA5DF",
+  "risk": "2",
+  "title": "`refresh()` will revert on Oracle deprecation, effectively disabling part of the protocol",
+  "issueId": 234,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/234"
+}
