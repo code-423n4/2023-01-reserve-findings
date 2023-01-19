@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "severity",
+  "risk": "2",
+  "title": "RevenueTrader doesn't check sellPrice inside manageToken()",
+  "issueId": 190,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/190"
+}
