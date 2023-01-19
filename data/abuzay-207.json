@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "abuzay",
+  "risk": "2",
+  "title": "The init function is marked as external initializer which is not a valid combination.",
+  "issueId": 207,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/207"
+}
