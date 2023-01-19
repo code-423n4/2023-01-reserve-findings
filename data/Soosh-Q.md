@@ -134,7 +134,7 @@ It is possible to hold a signed `delegate()` across different eras.
 - OR follow the recommendation in a seperate High risk issue titled "Bridged stRSR can lead to loss of funds" submitted by me.
 
 
-## `setRedemptionRateFloor(...)` should have checks
+## `setRedemptionRateFloor(...)` should be checked for reasonable value
 
 The function does not currently have a bound for acceptable values
 ```sol
@@ -158,6 +158,7 @@ I think it is important that `redemptionRateFloor` cannot be set to zero, but in
 
 ^ The same problem as trying to reach the end of a room, but each step taken must be half the distance of the previous step.
 
+Note that the issue is that both values can be set to zero at the same time. The above is reason for making `redmeptionRateFloor` non-zero, rather than enforcing `scalingRedemptionRate` be non-zero.
 ### Impact
 This **contradicts** a known ~~issue~~ behavior on the contest page
 
@@ -165,7 +166,7 @@ _"The governance has the ability to freeze, and with long freezing enabled (defa
 
 The last sentence suggests that governance should eventually not be able to soft-lock the backing.
 
-The ability to set `redemptionRateFloor` to zero/a small amount allows governance another way to soft-lock the backing without freezing capabilities.
+The ability to set `redemptionRateFloor` to zero/a small amount allows governance another way to soft-lock the backing without freezing capabilities. (governance sets both to zero, no amount can be redeemed)
 
 ### Recommendations
 ```sol
