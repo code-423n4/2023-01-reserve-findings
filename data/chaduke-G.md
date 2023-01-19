@@ -144,3 +144,17 @@ for (uint256 i = 0; i < erc20length; ++i) {
 if (allZero) revert("Empty redemption"); // short-circuit, no need to call _burn()
              
 ```
+
+G18. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L173-L179
+Caching ``rsr.balanceOf(address(this)`` can save gas.
+
+```
+uint256 rsrBal = rsr.balanceOf(address(this);
+if (rsrBal > 0) {
+            // For CEI, this is an interaction "within our system" even though RSR is already live
+            IERC20Upgradeable(address(rsr)).safeTransfer(
+                address(rsrTrader),
+                rsrBal)
+            );
+        }
+```
