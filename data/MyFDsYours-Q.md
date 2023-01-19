@@ -3,10 +3,10 @@
 \[L-01\] Constants not declared
 \[L-02\] Inefficient Boolean Mappings
 \[L-03\] Redundant Initializations
+\[L-04\] Checking for collateral assets twice in the same function
 \[NC-01\] Storage gaps not explicitly documented
 \[NC-02\] Splitting require() statements that use multiple condition
-\[NC-03\] Checking for collateral assets twice in the same function
-\[NC-04\] To improve the readability, consider changing the event name
+\[NC-03\] To improve the readability, consider changing the event name
 
 # \[L-01\] Constants not declared
 
@@ -38,7 +38,15 @@ Some storage variables are initialized to their default values, which is redunda
 In GnosisMock.sol contract [L50](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/GnosisMock.sol#L50)
 
 In EasyAuction.sol contract [L123](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L123)
+# \[L-04\] Checking for collateral assets twice in the same function
 
+In the function setPrimeBasket, the collateral is checked two times, in [L230](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L230) throught the require statement and in [L236](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L236) throught the call of the toColl function for an asset. Is it relevant to check two times ? I don't 
+think so, especially since the collateral value is not settable and does not change.
+
+## Recommandation
+
+Use another logic, for exemple retrieve the targetName of the asset by creating another function 
+that doesn't check for collateral assuming that the check already done,
 # \[NC-01\] Storage gaps not documented
 
 When using the proxy pattern for upgrades, it is common practice to include storage gaps on parent contracts to reserve 
@@ -60,25 +68,20 @@ Exemple in Deployer.sol [L48](https://github.com/reserve-protocol/protocol/blob/
 If the requirement fail, we cannot explicitly determine which address was set to zero without 
 checking each address one by one.
 
-# \[NC-03\] Checking for collateral assets twice in the same function
 
-In the function setPrimeBasket, the collateral is checked two times, in [L230](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L230) throught the require statement and in [L236](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L236) throught the call of the toColl function for an asset. Is it relevant to check two times ? I don't 
-think so, especially since the collateral value is not settable and does not change.
-
-## Recommandation
-
-Use another logic, for exemple retrieve the targetName of the asset by creating another function 
-that doesn't check for collateral assuming that the check already done,
-
-## \[NC-04\] To improve the readability, consider changing the event name
+## \[NC-03\] To improve the readability, consider changing the event name
 
 ## In BasketHandler.sol [L170](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L170) [L646](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L646)
 
 When the disabled state variable is modified, an event is emited but the event is called
 
-`emit BasketSet(nonce, basket.erc20s, refAmts, disabled);`
+```solidity 
+emit BasketSet(nonce, basket.erc20s, refAmts, disabled);
+```
 
 To be logic the event name must be **disabledBasketSet** or keep **basketSet** but the emit should
 be like this :
 
-`emit BasketSet(nonce, basket.erc20s, refAmts, !disabled);`
+```solidity 
+emit BasketSet(nonce, basket.erc20s, refAmts, !disabled);
+```
