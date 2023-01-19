@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xA5DF",
+  "risk": "2",
+  "title": "Basket range formula is inefficient, leading the protocol to unnecessary haircut",
+  "issueId": 235,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/235"
+}
