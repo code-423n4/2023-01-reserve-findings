@@ -161,3 +161,16 @@ if (rsrBal > 0) {
 
 G19. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L169-L170
 These two lines can be deleted, might be useless.
+
+G20. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L703
+Caching ``basket.erc20s.length`` can save gas here.
+
+G21. 
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L718-L729
+Caching ``backup.erc20s.length`` can save gas
+
+G22. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/Asset.sol#L81
+Enclosing it inside unchecked can save gas, overflow/underflow is not possible
+```
+return (p - delta, p + delta, 0);
+```
