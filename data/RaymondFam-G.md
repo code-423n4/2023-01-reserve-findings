@@ -180,6 +180,22 @@ For instance, the code block below may be refactored as follows:
 +        rTokenAddr = address(components.rToken);
     }
 ```
+## Unneeded logic
+In Auth.sol, a LONG_FREEZER role is given 6 charges whereas the SHORT_FREEZER role is only entitled to a one time use. And when they are run out of the assigned privileges, they can/will be recharged via `grantRole()`. In my opinion, the logic entailed is unnecessary since these assignees are trusted partners and/or associates to the protocol. If need be, the owner can always revoke their roles via the inherited `revokeRole()`.
+
+Consider removing the following lines of codes to save gas both on contract size and function calls:
+
+[File: Auth.sol](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol)
+
+```diff
+- 7: uint256 constant LONG_FREEZE_CHARGES = 6; // 6 uses
+
+- 121:        // Revoke short freezer role after one use
+- 122:        _revokeRole(SHORT_FREEZER, _msgSender());
+
+- 138:        // Revoke on 0 charges as a cleanup step
+- 139:        if (longFreezes[_msgSender()] == 0) _revokeRole(LONG_FREEZER, _msgSender());
+```
 ## += and -= cost more gas
 `+=` and `-=` generally cost 22 more gas than writing out the assigned equation explicitly. The amount of gas wasted can be quite sizable when repeatedly operated in a loop.
 
