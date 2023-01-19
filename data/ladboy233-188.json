@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "ladboy233",
+  "risk": "2",
+  "title": "Some ERC20 token such as UNI does not support type(uint256).max token approval",
+  "issueId": 188,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/188"
+}
