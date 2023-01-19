@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "SaeedAlipoor01988",
+  "risk": "2",
+  "title": "initialize function can be called by everyone and front-run can get happen.",
+  "issueId": 196,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/196"
+}
