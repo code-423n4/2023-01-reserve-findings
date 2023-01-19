@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xbrett8571",
+  "risk": "2",
+  "title": "Unexpected return value used for signature validation in `PermitLib` library.",
+  "issueId": 225,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/225"
+}
