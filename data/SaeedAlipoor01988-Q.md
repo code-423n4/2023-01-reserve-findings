@@ -1,7 +1,8 @@
-0 address check
+0 address Check
 0 address control should be done in these functions;
 
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L468
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p0/RToken.sol#L162
 
 ////////////////////////////////////////////// ***** //////////////////////////////////////////////
 
@@ -45,3 +46,5 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 now, what if in the future, the lending pool address in aave project gets changed? 
 deposit function in the StaticATokenLM contract will not work anymore! and there is no function in StaticATokenLM  contract to set approve an unlimited amount to the new lending pool address.
+
+////////////////////////////////////////////// ***** //////////////////////////////////////////////
