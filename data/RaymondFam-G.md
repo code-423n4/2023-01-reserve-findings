@@ -214,7 +214,7 @@ For instance, the code block below may be refactored as follows:
 
 [File: RToken.sol#L392-L396](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L392-L396)
 
-```
+```solidity
  earliest
      ? refundSpan(account, queue.left, endId)
      : refundSpan(account, endId, queue.right);
