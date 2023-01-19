@@ -66,3 +66,5 @@ function setRedemptionRateFloor(uint256 val) public governance {
 QA11. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L622
 The name ``item`` is misleading here, it should be renamed to ``queue``. 
 
+QA12. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L183
+Better to be called ``switchBasket()``. 
