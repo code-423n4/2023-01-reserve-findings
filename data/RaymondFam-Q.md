@@ -32,10 +32,13 @@ For instance, the import instances below could be refactored as follows:
     [ ... ]
 ```
 ## Interfaces and libraries should be separately saved and imported
-Some contracts have interface(s) or library showing up in its/their entirety at the top/bottom of the contract facilitating an ease of references on the same file page. This has, in certain instances, made the already large contract size to house an excessive code base. Consider saving the interfaces and libraries entailed respectively, and having them imported like all other files.
+Some contracts have interface(s) or library showing up in its/their entirety at the top/bottom of the contract facilitating an ease of references on the same file page. This has, in certain instances, made the already large contract size to house an excessive code base. Additionally, it might create difficulty locating them when attempting to cross reference the specific interfaces embedded elsewhere but not saved into a particular .sol file.  
+
+Consider saving the interfaces and libraries entailed respectively, and having them imported like all other files.
 
 Here are some of the instances entailed:
 
+[File: IAsset.sol#L75](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IAsset.sol#L75)
 [File: IMain.sol](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IMain.sol)
 [File: BasketHandler.sol#L61-L104](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L61-L104)
 [File: ATokenFiatCollateral.sol#L10-L27](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/ATokenFiatCollateral.sol#L10-L27)
@@ -49,10 +52,20 @@ Some interfaces in the code bases are named without the prefix `I` that could ca
 - interface TestIMain is IMain {
 + interface ITestIMain is IMain {
 ```
+## Contracts should have their names exactly matched to their filenames 
+Contracts, interfaces and libraries with their names differing with the filenames could sometimes create confusion and difficulty in cross referencing.
+
+For instance, the abstract contract below has been named `ComponetP1` where as the file has been saved as `Component.sol`. Consider sticking to the same name where possible:
+
+[File: Component.sol#L14](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Component.sol#L14)
+
+```solidity
+abstract contract ComponentP1 is
+```
 ## Camel/snake casing function names
 Function names should also be conventionally camel cased where possible. If snake case is preferred/adopted, consider lower casing them.
 
-Here is a specific instance entailed:
+Here is one of the numerous instances entailed:
 
 [File: ATokenFiatCollateral.sol#L26](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/assets/ATokenFiatCollateral.sol#L26)
 
@@ -304,4 +317,63 @@ The following event has no parameter in it to emit anything. Although the standa
 
 ```solidity
         emit MainInitialized();
+```
+## Useful sort function
+In [`manageTokensSortedOrder()`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L95-L99) of BackingManager.sol, `erc20s` must already be in sorted ascending order before it can call [`ArrayLib.sortedAndAllUnique(erc20s)`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Array.sol#L21-L27).
+
+Here is a useful and quick `sortAscending()` that may be added to Array.sol on top of the off chain method the protocol might already adopt. (Note: `IERC20[] memory arr` will have to be cast into `uint160[] memory arr` prior to calling this function.)
+
+```solidity
+    function sortAscending(
+        uint160[] memory arr,
+        int160 left,
+        int160 right
+    ) internal pure {
+        int160 i = left;
+        int160 j = right;
+        if (i == j) return;
+        uint160 pivot = arr[uint160(left + (right - left) / 2)];
+        while (i <= j) {
+            while (arr[uint160(i)] < pivot) i++;
+            while (pivot < arr[uint256(j)]) j--;
+            if (i <= j) {
+                (arr[uint160(i)], arr[uint160(j)]) = (
+                    arr[uint160(j)],
+                    arr[uint160(i)]
+                );
+                i++;
+                j--;
+            }
+        }
+        if (left < j) _quickSort(arr, left, j);
+        if (i < right) _quickSort(arr, i, right);
+    }
+```
+## `allUnique()` in Array.sol could have a remove logic embedded
+Consider having [`allUnique()`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Array.sol#L9-L17) refactored such that it will remove one of the two identical elements, e.g. replace the would be removed element with the last element and then calling arr.pop().
+
+Alternatively, here is another useful `removePosition()` that can be invoked without affecting the order of the elements in the array:
+
+```solidity
+  function _removePosition(IERC20[] memory arr, uint8 position)
+    internal
+    returns (IERC20[] memory newArr)
+  {
+    uint256 length = arr.length;
+    require(position < length);
+    newArr = new arr[](length - 1);
+    uint256 i;
+    for (; i < position; ) {
+      newArr[i] = arr[i];
+      unchecked {
+        ++i;
+      }
+    }
+    for (; i < length - 1; ) {
+      unchecked {
+        newArr[i] = arr[i + 1];
+        ++i;
+      }
+    }
+  }
 ```
