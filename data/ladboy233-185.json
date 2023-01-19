@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "ladboy233",
+  "risk": "2",
+  "title": "Unbounded loop in AssetRegistry#refresh can consume the gas and revert transaction",
+  "issueId": 185,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/185"
+}
