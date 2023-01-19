@@ -312,7 +312,7 @@ Use `require()` instead of `assert()`
 
 ## [NC-02] Constants in comparisons should appear on the left side
 
-Doing so will prevent [typo bug](https://www.moserware.com/2008/01/constants-on-left-are-better-but-this.html).
+Constants in comparisons should appear on the left side, doing so will prevent [typo bug](https://www.moserware.com/2008/01/constants-on-left-are-better-but-this.html).
 
 ```solidity
     assert(tradesOpen == 0 && !basketHandler.fullyCollateralized());
