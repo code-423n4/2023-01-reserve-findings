@@ -19,3 +19,27 @@ Look at the contract code.
 Observe that the _register and _registerIgnoringCollisions functions are internal and not described in the contract.
 Affected Version:
 This vulnerability exists in the provided codebase with the version
+
+
+Title: Incorrect data type used for "v" value in PermitLib library
+
+Severity: Low
+
+Description:
+The PermitLib library, which is used for verifying metatx sigs for EOAs and smart contract wallets, uses the data type "uint8" for the "v" value in the "requireSignature" function. However, the "v" value of an Ethereum signature can be either 27 or 28, which exceeds the range of possible values for "uint8".
+
+Impact:
+This issue limits the range of possible "v" values, but it will not cause any security vulnerability or vulnerability in the function. The function will continue to work as expected in most cases, but it may return false results in rare cases where the "v" value is outside the range of "uint8".
+
+Steps to Reproduce:
+
+Use the PermitLib library in a smart contract
+Call the "requireSignature" function with a "v" value that is outside the range of "uint8"
+Observe that the function may return false results
+Recommendation:
+To fix this issue, the data type for the "v" value should be changed to "uint256" to allow for all possible "v" values. This change can be made in the "requireSignature" function of the PermitLib library.
+
+Testing:
+
+Test the PermitLib library after the modification with different range of v values and confirm it's working as expected.
+Review the impact of modification on the overall smart contract.
