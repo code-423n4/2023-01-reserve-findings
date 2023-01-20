@@ -11,7 +11,3 @@ Changes:
        stakeRSR += rsrAmount;   //before
        stakeRSR = stakeRSR  + rsrAmount; //after
 
-
-## UNCHECKED IN FOR LOOP
-
-In line
