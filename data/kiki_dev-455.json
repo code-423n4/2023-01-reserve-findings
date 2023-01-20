@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "kiki_dev",
+  "risk": "2",
+  "title": "Storage gaps mismanagement may corrupt contract state",
+  "issueId": 455,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/455"
+}
