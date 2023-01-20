@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "attacker can steal RToken holders funds by performing reentrancy attack during redeem() function token transfers",
+  "issueId": 347,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/347"
+}
