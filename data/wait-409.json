@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "wait",
+  "risk": "2",
+  "title": "Distributor#distribute() can be used to steal funds from users' wallets",
+  "issueId": 409,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/409"
+}
