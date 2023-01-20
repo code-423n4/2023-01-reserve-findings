@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "peanuts",
+  "risk": "2",
+  "title": "Users should not be able to stake RSR when protocol is paused or frozen",
+  "issueId": 268,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/268"
+}
