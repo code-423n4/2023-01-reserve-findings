@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "__141345__",
+  "risk": "2",
+  "title": "`setRewardRatio()` breaks `payoutRatio` formula assumption",
+  "issueId": 330,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/330"
+}
