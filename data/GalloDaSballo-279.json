@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "GalloDaSballo",
+  "risk": "2",
+  "title": "A single malicious asset can sweep all tokens from contracts",
+  "issueId": 279,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/279"
+}
