@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "GalloDaSballo",
+  "risk": "2",
+  "title": "BasketHandler ERC20s can be removed by mistake and the basket will lose the value",
+  "issueId": 278,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/278"
+}
