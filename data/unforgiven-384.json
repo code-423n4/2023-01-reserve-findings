@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "early user can call issue() and then melt() to increase basketsNeeded to supply ratio to its maximum value and then melt() won't work and contract contract features like issue() won't work",
+  "issueId": 384,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/384"
+}
