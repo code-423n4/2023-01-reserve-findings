@@ -15,7 +15,8 @@
 |12      |Use an unchecked block when operands can't underflow/overflow|2|
 |13      |Make own counter instead of using CountersUpgradeable|1|
 |14      |Ternary operation is cheaper than if else statement|2|
-|15      |Miscellaneous| 2|
+|15      |Make up to 3 fields in an event indexed|2|
+|16      |Miscellaneous| 2|
 
 
 # Details
@@ -337,8 +338,12 @@ Really small optimization so it's also a choice to keep the if-else statement fo
 -   else assetsHigh += val;
 +   assetsHigh = (uint256(assetsHigh) + val >= FIX_MAX ? FIX_MAX: assetsHigh + val);
 ```
+## 15 Make up to 3 fields in an event indexed
+Indexing all fields in an event saves gas. If the event has more than 3 fiels, only index 3.
+- [IDeployerRegistry.sol#L7-L9](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IDeployerRegistry.sol#L7-L9)
+- [IDistributor.sol#L28](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IDistributor.sol#L28)
+- [IRToken.sol#L83](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IRToken.sol#L83)
 ## Miscellaneous
-
 ### Use ++x or x++ instead of x+=1
 Saves around 30 gas
 - [BasketHandler.sol#L636](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L636)
