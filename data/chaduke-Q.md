@@ -72,4 +72,9 @@ Better to be called ``switchBasket()``.
 QA13. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L38
 Maybe it is more reasonable to revert here; otherwise a documentation is needed for this behavior. 
 
-QA14. 
+QA14. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L70
+Zero check of ``_auctionLength`` is needed. 
+
+QA15. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L102-L108
+The ``deploy`` function needs to have an access control so that malicious users cannot call it or front-run it. 
+
