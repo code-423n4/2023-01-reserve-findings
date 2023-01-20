@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "function disableBasket() emits event with wrong parameters and it can cause other off-chain tools to not be able to work properly with protocol",
+  "issueId": 401,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/401"
+}
