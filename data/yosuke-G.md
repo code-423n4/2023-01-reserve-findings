@@ -1041,3 +1041,45 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 ### Recommended Mitigation Steps
 
 Use assembly to check for address(0)
+
+## [YO GAS-12] USE FUNCTION INSTEAD OF MODIFIERS
+
+### Handle
+yosuke
+
+## Vulnerability details
+### Impact
+
+### Proof of Concept
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Component.sol#L41
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Component.sol#L46
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Component.sol#L51
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/ReentrancyGuard.sol#L49
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L18
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L26
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L34
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L47
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/vendor/EasyAuction.sol#L914
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L59
+
+
+### Recommended Mitigation Steps
+USE FUNCTION INSTEAD OF MODIFIERS because of lower gas fee.
+ex)
+before
+
+```solidity=
+modifier notPausedOrFrozen() {
+    require(!main.pausedOrFrozen(), "paused or frozen");
+    _;
+}
+```
+
+after
+
+```solidity=
+function notPausedOrFrozen() public {
+    require(!main.pausedOrFrozen(), "paused or frozen");
+}
+
+```
