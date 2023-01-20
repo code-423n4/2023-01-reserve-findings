@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "nadin",
+  "risk": "2",
+  "title": "] Unnecessary precision loss in handoutExcessAssets(IERC20[] calldata erc20s)",
+  "issueId": 457,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/457"
+}
