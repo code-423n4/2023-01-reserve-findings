@@ -55,7 +55,11 @@ Consider upgrading to solidity 0.8.17
 
 ## [L-02] Loss of precision due to rounding
 
-Loss of precision due to rounding in [unstake](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L257) and [withdraw](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L300) functions.
+Loss of precision due to rounding in [unstake](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L257), [withdraw](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L300) and [stake](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L212) functions.
+
+```solidity
+    uint256 newDraftRSR = (newTotalDrafts * FIX_ONE_256 + (draftRate - 1)) / draftRate;;
+```
 
 ### Lines of code
 
@@ -140,7 +144,7 @@ Consider using `call()` instead with the CEI pattern implemented correctly.
 
 ### Recommended Mitigation Steps
 
-Add a `DEPLOYER` address and require that only him can call the `initialize()` function.
+Add a `DEPLOYER` address and require that only him can call the `init()` function.
 
 ## [L-05] Payout may be too soon
 
@@ -198,7 +202,7 @@ Homestead [(EIP-2)](https://eips.ethereum.org/EIPS/eip-2) added this limitation,
 
 ### Recommended Mitigation Steps
 
-Use OpenZeppelin's `ECDSA` library for signature verification.
+Use OpenZeppelin's [`ECDSA`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol) library for signature verification.
 
 ## [L-08] Inconsistent validation of input    
 
@@ -347,7 +351,7 @@ The Solidity docs recommend specifying imported symbols explicitly.
 
 ### Lines of code
 
-- **All contract**
+- **All contracts**
 
 ### Recommended Mitigation Steps
 Use specific imports syntax per [solidity docs](https://docs.soliditylang.org/en/v0.8.15/layout-of-source-files.html#importing-other-source-files) recommendation.
@@ -412,7 +416,7 @@ Consider upgrading to 0.8.12.
 ```solidity
 /// @audit: iff
 
-       //     queue.right == left  iff  there are no more pending issuances in this queue
+       // queue.right == left  iff  there are no more pending issuances in this queue
 ```
 > [RToken.sol:106](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L106)
 
@@ -423,7 +427,7 @@ Consider upgrading to 0.8.12.
 ```
 > [RToken.sol:109](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L109)
 
-## [NC-07] Include return parameters in NatSpec comments
+## [NC-07] Include `@return` parameters in NatSpec comments
 
 If Return parameters are declared, you must prefix them with `/// @return`. Some code analysis programs do analysis by reading [NatSpec](https://docs.soliditylang.org/en/v0.8.15/natspec-format.html) details, if they can't see the `@return` tag, they do incomplete analysis.
 
@@ -555,9 +559,19 @@ Add a `require()` statement to check that the new value is different than the cu
 
 The below methods do not emit an event when the state changes, something that it's very important for dApps and users.
 
+```solidity
+    function setName(string calldata name_) external governance {
+        name = name_;
+    }
+
+    function setSymbol(string calldata symbol_) external governance {
+        symbol = symbol_;
+    }
+```
+
 ### Lines of code 
 
-- [StRSR.sol:80](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L803)
+- [StRSR.sol:803](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L803)
 - [StRSR.sol:807](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L807)
 
 ## [NC-15] Signature Malleability of EVM's `ecrecover()`
@@ -654,7 +668,7 @@ Use `immutable` instead of `constants`
 
 ## [NC-19] Avoid shadowing inherited state variables  
 
-In `CTokenFiatCollateral .sol` there is a local variable named `erc20`, but there is a state variable named `erc20` in the inherited `Asset .sol` with the same name. This use causes compilers to issue warnings, negatively affecting checking and code readability.
+In `CTokenFiatCollateral.sol` there is a local variable named `erc20`, but there is a state variable named `erc20` in the inherited `Asset.sol` with the same name. This use causes compilers to issue warnings, negatively affecting checking and code readability.
 
 ```solidity
         ICToken erc20 = ICToken(address(config.erc20));
@@ -688,4 +702,4 @@ The correct and clear error description explains to the user why the function re
 
 ### Recommended Mitigation Steps
 
-Error definitions should be added to the `revert("...")` block
+Error definitions should be added to the `revert("...")` block.
