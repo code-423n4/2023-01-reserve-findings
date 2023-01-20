@@ -17,6 +17,12 @@
 -    //   lastPayoutBal' = rToken.balanceOf'(this) (balance now == at end of pay leriod)
 +    //   lastPayoutBal' = rToken.balanceOf'(this) (balance now == at end of pay period)
 ```
+[File: IAsset.sol#L92](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/interfaces/IAsset.sol#L92)
+
+```diff
+-    /// @return The status of this collateral asset. (Is it defaulting? Might it soon?)
++    /// @return The status of this collateral asset. (Is it defaulting? Might it be soon?)
+```
 ## Modularity on import usages
 For cleaner Solidity code in conjunction with the rule of modularity and modular programming, use named imports with curly braces instead of adopting the global import approach.
 
