@@ -216,3 +216,25 @@ if (!main.pausedOrFrozen()) {
 }
 ```
 This will make it so that `redeem(...)` will revert if `requireValidBUExchangeRate()` does not hold after `melt()`. (should create a `paused()` function to check if paused. Above recommendation is based on existing `pausedOrFrozen()` function).
+
+## Inherent DoS risk from battery capacity
+
+system-design.md - RedemptionBattery:
+```md
+In order to restrict the system to organic patterns of behavior, we have the concept of a Redemption Battery. When redemption occurs, it uses up stored battery charge. The battery has a natural charging rate, which is controlled by the combination of two variables: _redemptionRateFloor_ and _scalingRedemptionRate_.
+```
+Issue is that someone can grief with this functionality, causing a DoS since there isn't really a penalty for continuously  `issue(...) -> vest(...) -> redeem(...)` to drain the battery, only gas costs. The attacker uses up the battery charge so other users cannot redeem.
+
+This is amplified if issuance rate is set higher than redeem rate, since issuances for the attacker can be instantly vested and redeemed in a single transaction.
+
+Issuance can also be DOS, but that requires capital lockup for the griefer (Since they will also have to wait to vest)
+
+Affected:
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/docs/system-design.md?plain=1#L269-L291
+
+### Impact
+Prevent other users from redeeming RTokens
+
+Would submit as higher risk if I had a decent recommendation.
+### Recommendations
+Inherent risk due to design/purpose of this functionality.
