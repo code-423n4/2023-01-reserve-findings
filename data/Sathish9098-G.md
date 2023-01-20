@@ -380,21 +380,3 @@ When fetching data from a storage location, assigning the data to a memory varia
 
 
 
-GAS-1	Use assembly to check for address(0)	9
-GAS-2	array[index] += amount is cheaper than array[index] = array[index] + amount (or related variants)	8
-GAS-5	State variables should be cached in stack variables rather than re-reading them from storage	20
-GAS-6	Use calldata instead of memory for function arguments that do not get mutated	19
-GAS-14	internal functions not called by the contract should be removed	20
-
-
-
-GAS-1	Using bools for storage incurs overhead	17
-GAS-2	Cache array length outside of loop	18
-GAS-3	Use Custom Errors	202
-GAS-4	Don't initialize variables with default value	66
-GAS-5	Long revert strings	36
-GAS-6	Functions guaranteed to revert when called by normal users can be marked payable	16
-GAS-7	++i costs less gas than i++, especially when it's used in for-loops (--i/i-- too)	21
-GAS-8	Using private rather than public for constants, saves gas	38
-GAS-9	Use shift Right/Left instead of division/multiplication if possible	5
-GAS-10	Use != 0 instead of > 0 for unsigned integer comparison	96
