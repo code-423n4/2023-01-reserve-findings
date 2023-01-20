@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "canceling the vesting issuance won't decrease allVestAt which would cause self DOS as users interact with system or attacker can cause DOS intentionally ",
+  "issueId": 364,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/364"
+}
