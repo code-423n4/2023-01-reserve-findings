@@ -383,3 +383,17 @@ Alternatively, here is another useful `removePosition()` that can be invoked wit
     }
   }
 ```
+## FLOOR over CEIL
+In `openTrade()` of Broker.sol, `CEIL` is the input RoundMode in `mulDiv256()` to return [result++](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L537) to `req.sellAmount`. 
+
+This could still end up having `req.sellAmount > GNOSIS_MAX_TOKENS` if `maxQty == req.sellAmount`. For this reason, consider refactoring the affected code by replacing `CEIL` with `FLOOR` to avoid the incidental edge cases:
+
+[File: Broker.sol#L104-L107](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L104-L107)
+
+```solidity
+        if (maxQty > GNOSIS_MAX_TOKENS) {
+-            req.sellAmount = mulDiv256(req.sellAmount, GNOSIS_MAX_TOKENS, maxQty, CEIL);
++            req.sellAmount = mulDiv256(req.sellAmount, GNOSIS_MAX_TOKENS, maxQty, FLOOR);
+            req.minBuyAmount = mulDiv256(req.minBuyAmount, GNOSIS_MAX_TOKENS, maxQty, FLOOR);
+        }
+```
