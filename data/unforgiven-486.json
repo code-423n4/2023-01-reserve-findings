@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "reentrancy attack is possible if RSR is upgraded to ERC777 in function stake() of StRSR contract which can cause RSR stakers fund loss and reward delay",
+  "issueId": 486,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/486"
+}
