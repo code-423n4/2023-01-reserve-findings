@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "Bauer",
+  "risk": "2",
+  "title": "Register an asset with the same ERC20 can disable basket",
+  "issueId": 275,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/275"
+}
