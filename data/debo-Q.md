@@ -383,3 +383,29 @@ function _divrnd(
     return result;
 }
 ```
+
+## [L-09]
+```
+SWC-108 State Variable Default Visibility
+```
+
+URL
+```
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L11
+```
+
+Description
+```
+Labelling the visibility explicitly makes it easier to catch incorrect assumptions about who can access the variable.
+```
+
+PoC
+```
+uint48 constant BLOCKS_PER_HOUR = 300; // {blocks/hour}
+```
+
+Remediation
+```
+// Add visibility e.g., internal
+uint48 internal constant BLOCKS_PER_HOUR = 300; // {blocks/hour}
+```
