@@ -373,3 +373,15 @@ As such consider refactoring the following code line to save gas on contract siz
                 needed = held;
 -            }
 ```
+## The first condition check is unneeded
+In `quantityMulPrice()` of BasketHandler.sol, the comment before the first if block already mentioned qty will never = 0 here because of the check in _price(). For this reason, `qty == 0` is always going to return false, making this check a waste of gas.
+
+Consider refactoring the affected code line as follows:
+
+[File: BasketHandler.sol#L358-L359](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L358-L359)
+
+```diff
+        //      qty will never = 0 here because of the check in _price()
+-        if (qty == 0 || p == 0) return 0;
++        if (p == 0) return 0;
+```
