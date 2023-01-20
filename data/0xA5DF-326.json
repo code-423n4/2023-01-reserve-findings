@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xA5DF",
+  "risk": "2",
+  "title": "`Asset.lotPrice()` doesn't use the most recent price in case of oracle timeout",
+  "issueId": 326,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/326"
+}
