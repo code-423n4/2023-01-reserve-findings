@@ -1,4 +1,4 @@
-# Cache ChainlinkFeed AggregatorV3Interface's decimals as immutable variable at constructor
+# ChainlinkFeed AggregatorV3Interface's decimals should be cached as an immutable variable at constructor
 
 This `chainlinkFeed.decimals()` is called each time when query a price, which is unnecessary, as Chainlink won't change decimals.
 
