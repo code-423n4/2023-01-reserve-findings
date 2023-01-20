@@ -66,3 +66,40 @@ Replace 604800 with 604_800
 Replace 2592000 with 2_592_000
 Replace 1000 with 1_000
 
+
+# Number 3: BLOCK VALUES AS A PROXY FOR TIME
+
+Vulnerability details
+
+### Impact
+
+Some contracts use block.timestamp and block.number which can be problematic as Miners can alter block.timestamp with the following restrictions.
+
+It cannot bear a time stamp that is earlier than that of its parent.
+It won't be too long from now.
+
+## Proof of Concept
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L114 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L637 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L71 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L313 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/RedemptionBattery.sol#L47 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L102 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L108 
+
+## Tools Used
+
+Manual Analysis
+
+## Recommended Mitigation Steps
+
+
+1. Don't use block.timestamp for a source of entropy and random number
+2. Use of trusted oracles
