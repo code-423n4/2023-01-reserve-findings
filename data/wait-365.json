@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "wait",
+  "risk": "2",
+  "title": "Missing time check for GnosisTrade#settle()",
+  "issueId": 365,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/365"
+}
