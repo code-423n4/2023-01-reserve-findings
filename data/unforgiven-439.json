@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "attacker can make stakeRate to be 1 in the StRSR contract and users depositing tokens can lose funds because of the big rounding error",
+  "issueId": 439,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/439"
+}
