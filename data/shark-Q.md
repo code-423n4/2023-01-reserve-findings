@@ -131,7 +131,7 @@ Using named imports (`import {x} from "y.sol"`) will speed up compilation, and a
 
 For example:
 
-File: `BackingManager.sol` [Line 4-12](https://github1s.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L4-L12)
+File: `BackingManager.sol` [Line 4-12](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L4-L12)
 
 ```solidity
 4: import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
