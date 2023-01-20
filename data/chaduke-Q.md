@@ -113,5 +113,11 @@ IERC20Upgradeable(address(rsr)).safeTransfer(_msgSender(), seizedRSR);
 
 ```
 
+QA19. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L443
+Needs to check availableAt as well for left
+```
+if (left >= right && queue[right].availableAt > time) return right;
+if (queue[left].availableAt > time) return left; 
+```
 
 
