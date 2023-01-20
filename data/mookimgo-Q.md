@@ -24,3 +24,23 @@ so the event `UnstakingCompleted` emitting is meaningful, to inform that a withd
         // == Interaction ==
         IERC20Upgradeable(address(rsr)).safeTransfer(account, rsrAmount);
 ```
+
+# event UnstakingCompleted should place `staker` address as the first parameter
+
+`eth_getLogs` RPC call can only filter by topics in order, like specifying topics0 and topics1, while it cannot search by topics3 without specifying topics1 and topic2.
+
+So in order to facilitate event searching for a specific staker using `eth_getLogs` RPC call, it's recommended to move staker to the first event parameter.
+
+**Suggestion**: change the event definition to:
+
+```
+    event UnstakingCompleted(
+        address indexed staker,
+        uint256 indexed firstId,
+        uint256 indexed endId,
+        uint256 draftEra,
+        uint256 rsrAmount
+    );
+```
+
+And correspondingly update the code.
