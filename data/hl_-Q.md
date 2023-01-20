@@ -1,8 +1,10 @@
 # Table of Contents
 
 - [L-01] Require() should be used instead of assert()
+- [L-02] Initialize function can be front-run
 - [NC-01] Use a more recent version of solidity
 - [NC-02] Best practice is to prevent signature malleability
+- [NC-03] Best practice is to use Solidity time instead of big numbers
 
 ## [L-01] Require() should be used instead of assert()
 
@@ -13,6 +15,12 @@ assert() should be avoided even past solidity version 0.8.0 as its documentatio
 For example: 
 
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L249
+
+## [L-02] Initialize function can be front-run
+
+The initialize function that initializes important contract state can be called by anyone. The attacker can initialize the contract before the legitimate deployer. In the best case for the victim, they notice it and have to redeploy their contract costing gas.
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L167
 
 ## [NC-01] Use a more recent version of solidity
 
@@ -27,3 +35,9 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 Use OpenZeppelin’s ECDSA contract rather than calling ecrecover() directly.
 
 https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L155
+
+## [NC-03] Best practice is to use Solidity time instead of big numbers
+
+As best practice and for better readability, write 1 years instead of 31536000. For example: 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L33
