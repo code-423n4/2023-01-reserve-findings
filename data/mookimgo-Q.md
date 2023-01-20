@@ -44,3 +44,21 @@ So in order to facilitate event searching for a specific staker using `eth_getLo
 ```
 
 And correspondingly update the code.
+
+-----
+
+# docs @param should be changed to @return in CTokenNonFiatCollateral.sol's tryPrice function
+
+https://github.com/reserve-protocol/protocol/blob/fdd9f81fe58953d758dbea62beed169a74523de1/contracts/plugins/assets/CTokenNonFiatCollateral.sol#L36
+
+low, high, pegPrice is return value, should not use `@param` in docs
+
+Suggestion: change to:
+
+```
+    /// Can revert, used by other contract functions in order to catch errors
+    /// @return low {UoA/tok} The low price estimate
+    /// @return high {UoA/tok} The high price estimate
+    /// @return pegPrice {target/ref}
+    function tryPrice()
+```
