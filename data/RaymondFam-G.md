@@ -289,7 +289,7 @@ Before deploying your contract, activate the optimizer when compiling using “s
 ```
 module.exports = {
 solidity: {
-version: "0.8.16",
+version: "0.8.9",
 settings: {
   optimizer: {
     enabled: true,
@@ -384,4 +384,14 @@ Consider refactoring the affected code line as follows:
         //      qty will never = 0 here because of the check in _price()
 -        if (qty == 0 || p == 0) return 0;
 +        if (p == 0) return 0;
+```
+## Unneeded `assert()`
+In `init()` of GnosisTrade.sol, asserting `origin_ != address(0)` is unnecessary because it is the [caller, `_msgSender()`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L88), that has invoked `openTrade()` in Broker.sol before [`trade.init()`](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L116) is externally called.
+
+Consider removing it to save gas both on contract size and function calls:
+
+[File: GnosisTrade.sol#L98](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L98)
+
+```diff
+-        assert(origin_ != address(0));
 ```
