@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "redeem() should be possible when protocol is Paused but to be able to redeem function grantRTokenAllowance() should be called for any basket tokens and it can only be called when protocol is not paused",
+  "issueId": 424,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/424"
+}
