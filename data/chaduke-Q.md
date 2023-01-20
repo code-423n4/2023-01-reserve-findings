@@ -81,3 +81,21 @@ The ``deploy`` function needs to have an access control so that malicious users 
 QA16. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L87-L90
 Using ``isContract()`` from openzeppelin to ensure the input erc20 address is a valid contract address.
 
+QA17. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L551-L553
+The ``draftAmount`` has a round-up error due to round-up error introduced by the way ``draftRate`` is calculated:
+```
+        uint256 newTotalDrafts = (draftRate * draftRSR) / FIX_ONE;
+        uint256 draftAmount = newTotalDrafts - totalDrafts;
+        totalDrafts = newTotalDrafts;
+```
+While ``draftRate`` is calculated as follows: 
+```
+draftRate = uint192((FIX_ONE_256 * totalDrafts + (draftRSR - 1)) / draftRSR);
+```
+The correction would be to allow ``draftAmount`` has a round-down error rather than round-up error. 
+```
+       draftRate = uint192((FIX_ONE_256 * totalDrafts) / draftRSR);
+        uint256 draftAmount = (draftRate*rsrAmount)/FIX_ONE;
+        uint256 newTotalDrafts = totalDrafts + draftAmount;         
+        totalDrafts = newTotalDrafts;
+```
