@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "user funds loss in withdraw() of StRSR because code don't revert when calculated rsrAmount is zero",
+  "issueId": 412,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/412"
+}
