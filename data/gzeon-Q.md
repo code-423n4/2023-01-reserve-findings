@@ -21,3 +21,11 @@ It is also technically not the max becuase < is used instead of <=
         require(val < MAX_TRADE_SLIPPAGE, "invalid maxTradeSlippage");
 ```
 
+### Use of assert
+
+Assert consume all available gas, use revert instead.
+
+protocol/contracts/p1/BasketHandler.sol:L556
+```
+            assert(targetIndex < targetsLength);
+```
