@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "wait",
+  "risk": "3",
+  "title": "The Furnace#melt() is vulnerable to sandwich attacks",
+  "issueId": 258,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/258"
+}
