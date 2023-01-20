@@ -53,6 +53,8 @@ https://github.com/reserve-protocol/protocol/blob/fdd9f81fe58953d758dbea62beed16
 
 low, high, pegPrice is return value, should not use `@param` in docs
 
+Similar issues also in `SelfReferentialCollateral.sol`, `RTokenAsset.sol`, `CTokenNonFiatCollateral.sol`, `Asset.sol`, `FiatCollateral.sol`, `EURFiatCollateral.sol`, `NonFiatCollateral.sol`
+
 Suggestion: change to:
 
 ```
