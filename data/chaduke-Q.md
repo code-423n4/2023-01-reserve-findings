@@ -99,3 +99,19 @@ The correction would be to allow ``draftAmount`` has a round-down error rather t
         uint256 newTotalDrafts = totalDrafts + draftAmount;         
         totalDrafts = newTotalDrafts;
 ```
+
+QA18. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L374
+If seizeRSR() needs to seize the whole balance ``rsr.balanceOf(address(this)``, then it will fail due to numerous round-up error.
+The final ``seizedRSR`` is propotionately allocated from the three pools: stakeRSR, draftRSR, and reward pool, which together constitutes ``rsr.balanceOf(address(this)``. Since each portion, ``stakeRSRToTake``, ``draftRSRToTake`` and ``rewardsRSRToTake`` are calculated with a round-up error, finally, it is possible that "seizedRSR > rsr.balanceOf(address(this)" (assuming ``rsrAmout = rsr.balanceOf(address(this)``). As a result, the following statement will revert:
+```
+IERC20Upgradeable(address(rsr)).safeTransfer(_msgSender(), seizedRSR);
+```
+Due to insufficient balance. To fix, do a final check of seizedRSR as follows:
+```
+if(seizedRSR > rsrBalance) seizedRSR = rsrBalance;
+IERC20Upgradeable(address(rsr)).safeTransfer(_msgSender(), seizedRSR);
+
+```
+
+
+
