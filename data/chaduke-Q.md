@@ -78,9 +78,3 @@ Zero check of ``_auctionLength`` is needed.
 QA15. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L102-L108
 The ``deploy`` function needs to have an access control so that malicious users cannot call it or front-run it. 
 
-QA16. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L23-L24
-Wrong spelling of the fields, correction: 
-```
-// distribution[FURNACE].rsrTotal == 0
-    // distribution[ST_RSR].rTokenTotal == 0
-```
