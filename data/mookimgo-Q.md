@@ -5,7 +5,7 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 When rsrAmount equals to zero, there is indeed no need to call `rsr.safeTransfer`.
 
 But this function has modified state variable `firstRemainingDraft[draftEra][account]`, 
-so the event `UnstakingCompleted` emitting is meaningful, to inform that a withdraw has been processed.
+so the event `UnstakingCompleted` emitting is meaningful, to inform that a withdraw has been processed, and `endId` has changed.
 
 **Suggestion**: move `if (rsrAmount == 0) return;` to after the event emit, like:
 
