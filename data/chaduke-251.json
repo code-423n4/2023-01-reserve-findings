@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "chaduke",
+  "risk": "3",
+  "title": "Battery seems to be still charging even when battery.redemptionRateFloor == 0 && battery.scalingRedemptionRate == 0",
+  "issueId": 251,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/251"
+}
