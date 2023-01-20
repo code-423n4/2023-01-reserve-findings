@@ -342,3 +342,34 @@ As an example, the following instance may be refactored as follows:
         rToken = val;
     }
 ```
+## Unneeded if block
+In BackingManager.sol, the second check in the if block of `handoutExcessAssets()` is unneeded because `basketHandler.fullyCollateralized()` has already confirmed that `basketsHeldBy(address(backingManager)) >= rToken.basketsNeeded()` before `handoutExcessAssets()` is privately invoked:
+
+[File: BasketHandler.sol#L273-L275](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L273-L275)
+
+```solidity
+    function fullyCollateralized() external view returns (bool) {
+        return basketsHeldBy(address(backingManager)) >= rToken.basketsNeeded();
+    }
+```
+As such consider refactoring the following code line to save gas on contract size and function calls:
+
+[File: BackingManager.sol#L192-L206](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L192-L206) 
+
+```diff
+-            if (held.gt(needed)) {
+                // gas-optimization: RToken is known to have 18 decimals, the same as FixLib
+                uint192 totalSupply = _safeWrap(rToken.totalSupply()); // {rTok}
+
+                // {BU} = {BU} - {BU}
+                uint192 extraBUs = held.minus(needed);
+
+                // {rTok} = {BU} * {rTok / BU} (if needed == 0, conv rate is 1 rTok/BU)
+                uint192 rTok = (needed > 0) ? extraBUs.mulDiv(totalSupply, needed) : extraBUs;
+
+                // gas-optimization: RToken is known to have 18 decimals, same as FixLib
+                rToken.mint(address(this), uint256(rTok));
+                rToken.setBasketsNeeded(held);
+                needed = held;
+-            }
+```
