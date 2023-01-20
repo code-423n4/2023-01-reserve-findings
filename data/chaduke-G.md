@@ -180,3 +180,13 @@ There is no need to create the ``transfer[]`` data structure and this code, we c
 ```
 IERC20Upgradeable(address(erc20)).safeTransferFrom(from, addrTo, transferAmt);
 ```
+
+G24. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Furnace.sol#L82-L83
+Exchanging these two lines to avoid a subtraction operation. We also put inside the if statement to avoid
+updating ``lastPayoutBal`` when ``amount == 0``. 
+```
+        if (amount > 0) {
+               rToken.melt(amount);
+               lastPayoutBal = rToken.balanceOf(address(this)); 
+       } 
+```
