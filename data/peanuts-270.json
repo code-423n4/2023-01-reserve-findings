@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "peanuts",
+  "risk": "2",
+  "title": "Functions unstake() and withdraw() in stRSR.sol should not have notPausedOrFrozen modifier",
+  "issueId": 270,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/270"
+}
