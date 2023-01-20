@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "functions stake() and unstake() won't revert when calculated mint amount is 0 or withdraw amount is 0 which would cause users to slowly lose dust funds while sums of those dust can be big amount",
+  "issueId": 430,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/430"
+}
