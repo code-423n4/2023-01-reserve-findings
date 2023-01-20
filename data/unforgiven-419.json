@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "function withdraw() in StRSR won't update contract state (totalDrafts) in all cases which can cause wrong fund distribution and fund stucking in the contract",
+  "issueId": 419,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/419"
+}
