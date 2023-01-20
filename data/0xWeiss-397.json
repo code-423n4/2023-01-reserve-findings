@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "0xWeiss",
+  "risk": "3",
+  "title": "Unchecked erecover address is not 0",
+  "issueId": 397,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/397"
+}
