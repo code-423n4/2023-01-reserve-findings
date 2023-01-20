@@ -13,3 +13,27 @@ AssetRegistry.sol
 
 
 ```
+
+
+### _register is not implemented correctly
+
+```
+    function _register(IAsset asset) internal returns (bool registered) {
+        require(
+            !_erc20s.contains(address(asset.erc20())) || assets[asset.erc20()] == asset,
+            "duplicate ERC20 detected"
+        );
+
+        registered = _registerIgnoringCollisions(asset);
+    }
+
+```
+if assets[asset.erc20()] == asset, the internaly function call _registerIgnoringCollisions() will return
+
+I think is should be
+```
+   require(
+            !_erc20s.contains(address(asset.erc20())) || assets[asset.erc20()] != asset,
+            "duplicate ERC20 detected"
+        );
+```
