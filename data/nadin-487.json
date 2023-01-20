@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "nadin",
+  "risk": "2",
+  "title": "abi.encodePacked Allows Hash Collision",
+  "issueId": 487,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/487"
+}
