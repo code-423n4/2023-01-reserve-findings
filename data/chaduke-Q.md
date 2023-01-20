@@ -78,14 +78,3 @@ Zero check of ``_auctionLength`` is needed.
 QA15. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L102-L108
 The ``deploy`` function needs to have an access control so that malicious users cannot call it or front-run it. 
 
-QA16. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L168-L173
-We should delete distribution[dest] as well when ``share.rsrDist == 0 && share.rTokenDist == 0``; otherwise L29 documentation is not true "// distribution[dest] != (0,0) if and only if dest in destinations". 
-```
- if (share.rsrDist == 0 && share.rTokenDist == 0) {
-            destinations.remove(dest);
-            delete distribution[dest];
-        } else {
-            destinations.add(dest);
-            require(destinations.length() <= MAX_DESTINATIONS_ALLOWED, "Too many destinations");
-        }
-```
