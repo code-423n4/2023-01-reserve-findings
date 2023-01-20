@@ -1,4 +1,4 @@
-# Number 1: FLOATING PRAGMA
+# 1: FLOATING PRAGMA
 
 Vulnerability details
 
@@ -26,7 +26,7 @@ Manual Analysis
 
 Remove ^ in “pragma solidity ^0.8.9” and change it to “pragma solidity 0.8.9” to be consistent with the rest of the contracts.
 
-# Number 2: MORE READABLE CONSTANTS
+# 2: MORE READABLE CONSTANTS
 
 Vulnerability details
 
@@ -67,7 +67,7 @@ Replace 2592000 with 2_592_000
 Replace 1000 with 1_000
 
 
-# Number 3: BLOCK VALUES AS A PROXY FOR TIME
+# 3: BLOCK VALUES AS A PROXY FOR TIME
 
 Vulnerability details
 
@@ -98,8 +98,52 @@ https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94b
 
 Manual Analysis
 
-## Recommended Mitigation Steps
-
+### Recommended Mitigation Steps
 
 1. Don't use block.timestamp for a source of entropy and random number
 2. Use of trusted oracles
+
+# 4: USE CONSTANTS FOR NUMBERS
+
+Vulnerability details
+
+### Impact
+
+In several locations in the code, numbers like 1e12, 1e18, 1e27 are used. The same goes for values like: type(uint256).max It is quite easy to make a mistake somewhere, also when comparing values.
+
+## Proof of Concept
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L119 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L101 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/StaticATokenLM.sol#L416 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/RayMathNoRounding.sol#L15 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/aave/RayMathNoRounding.sol#L21 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/ATokenMock.sol#L92 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/AaveLendingPoolMock.sol#L36 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/InvalidFiatCollateral.sol#L24 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/NontrivialPegCollateral.sol#L13 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/NontrivialPegCollateral.sol#L24 
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/NontrivialPegCollateral.sol#L35 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/NontrivialPegCollateral.sol#L46 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L88 
+
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/trading/GnosisTrade.sol#L89 
+
+## Tools Used
+
+Manual Analysis
+
+## Recommended Mitigation Steps
+
+Recommend defining constants for the numbers and values used throughout the code.
