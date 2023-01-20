@@ -159,6 +159,10 @@ I think it is important that `redemptionRateFloor` cannot be set to zero, but in
 ^ The same problem as trying to reach the end of a room, but each step taken must be half the distance of the previous step.
 
 Note that the issue is that both values can be set to zero at the same time. The above is reason for making `redmeptionRateFloor` non-zero, rather than enforcing `scalingRedemptionRate` be non-zero.
+
+Affected:
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L615-L618
+
 ### Impact
 This **contradicts** a known ~~issue~~ behavior on the contest page
 
