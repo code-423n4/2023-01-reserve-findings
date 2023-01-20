@@ -2,8 +2,7 @@
 
 \[L-01\] Constants not declared
 \[L-02\] Inefficient Boolean Mappings
-\[L-03\] Redundant Initializations
-\[L-04\] Checking for collateral assets twice in the same function
+\[L-03\] Checking for collateral assets twice in the same function
 \[NC-01\] Storage gaps not explicitly documented
 \[NC-02\] Splitting require() statements that use multiple condition
 \[NC-03\] To improve the readability, consider changing the event name
@@ -21,7 +20,6 @@ all constants have clear names.
 
 In Broker.sol contract [L44](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L44)
 In InvalidBrokerMock.sol contract [L20](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/InvalidBrokerMock.sol#L20)
-In BadERC20.sol contract [L15](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/BadERC20.sol#L15)
 
 Mappings that contain boolean variables are inefficient in general, because the solidity compiler 
 masks the values to ensure no dirty bits are propagated.
@@ -31,14 +29,7 @@ masks the values to ensure no dirty bits are propagated.
 Using `mapping(address => uint256)` instead of `mapping(address => bool)` eliminates these checks 
 and the number of SLOADs needed to retrieve an entry from mapping.
 
-# \[L-03\] Redundant Initializations
-
-Some storage variables are initialized to their default values, which is redundant and wastes gas.
-
-In GnosisMock.sol contract [L50](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/GnosisMock.sol#L50)
-
-In EasyAuction.sol contract [L123](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/plugins/mocks/EasyAuction.sol#L123)
-# \[L-04\] Checking for collateral assets twice in the same function
+# \[L-03\] Checking for collateral assets twice in the same function
 
 In the function setPrimeBasket, the collateral is checked two times, in [L230](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L230) throught the require statement and in [L236](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BasketHandler.sol#L236) throught the call of the toColl function for an asset. Is it relevant to check two times ? I don't 
 think so, especially since the collateral value is not settable and does not change.
