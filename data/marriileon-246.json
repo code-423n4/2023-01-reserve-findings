@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "marriileon",
+  "risk": "2",
+  "title": "`stRSR` token can be used by malicious attackers for an attack called address poisoning",
+  "issueId": 246,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/246"
+}
