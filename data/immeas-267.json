@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "immeas",
+  "risk": "2",
+  "title": "attacker can prevent vesting for a very long time",
+  "issueId": 267,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/267"
+}
