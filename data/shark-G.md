@@ -135,3 +135,53 @@ Here are some examples of this issue:
 - File: `Auth.sol` [Line 181](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L181)
 - File: `Auth.sol` [Line 188](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/mixins/Auth.sol#L188)
 - File: `Broker.sol` [Line 135](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Broker.sol#L135)
+
+## 6. Non-strict equalities (`<=`, `>=`) is less gas efficient than strict equalities (`<`, `>`)
+
+Strict equalities will save gas (less opcodes)
+
+For example:
+
+File: `Fixed.sol` [Line 101](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/libraries/Fixed.sol#L101)
+
+```solidity
+    if (shiftLeft <= -96) return (rounding == CEIL ? 1 : 0); // 0 < uint.max / 10**77 < 0.5
+```
+
+In the code above, `<=` is used when `<` could be used instead:
+
+```solidity
+    if (shiftLeft < -97) return (rounding == CEIL ? 1 : 0); // 0 < uint.max / 10**77 < 0.5
+```
+
+## 7. Using `storage` instead of `memory` for structs/arrays saves gas
+
+When retrieving data from a `storage` location, assigning the data to a `memory` variable will cause all fields of the struct/array to be read from storage, which incurs a Gcoldsload (2100 gas) for each field of the struct/array. If the fields are read from the new `memory` variable, they incur an additional MLOAD rather than a cheap stack read. Instead of declaring the variable with the memory keyword, declaring the variable with the `storage` keyword and caching any fields that need to be re-read in stack variables, will be much cheaper, only incurring the Gcoldsload for the fields actually read. The only time it makes sense to read the whole struct/array into a `memory` variable, is if the full struct/array is being returned by the function, is being passed to a function that requires `memory`, or if the array/struct is being read from another `memory` array/struct
+
+For example:
+
+File: `BackingManager.sol` [Line 219-220](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L219-L220)
+
+## 8. Revert as early as possible
+
+Functions should revert as early as possible to prevent unnecessary gas wastage.
+
+File: `StRSR.sol` [Line 257-260](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L257-L260)
+
+```solidity
+257:    function unstake(uint256 stakeAmount) external notPausedOrFrozen {
+258:        address account = _msgSender();
+259:        require(stakeAmount > 0, "Cannot withdraw zero");
+260:        require(stakes[era][account] >= stakeAmount, "Not enough balance");
+```
+
+In the code above, `address account` is unnecessarily declared before `require(stakeAmount > 0)`.
+
+Consider swapping line 259 and line 258:
+
+```solidity
+257:    function unstake(uint256 stakeAmount) external notPausedOrFrozen {
+258:        require(stakeAmount > 0, "Cannot withdraw zero");
+259:        address account = _msgSender();
+260:        require(stakes[era][account] >= stakeAmount, "Not enough balance");
+```
