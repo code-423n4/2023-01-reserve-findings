@@ -58,18 +58,7 @@
 -[RToken](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L480)
 -[RToken](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L483)
 
-## G-04: using ++var1 is more gas efficent than var1++
--[Trading](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/Trading.sol#L121)
--[BasketHandler](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/BasketHandler.sol#L598)
--[BasketHandler](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/BasketHandler.sol#L621)
--[BasketHandler](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/BasketHandler.sol#L653)
--[Distributor](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L133)
--[Distributor](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L128)
--[RToken](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L316)
--[StRSR](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L578)
--[StRSR](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/StRSR.sol#L590)
-
-## G-05: Where overflow is impossible var1++ should be wraped in unchecked{} block
+## G-04: Where overflow is impossible var1++ should be wraped in unchecked{} block
 ### It saves gas because it compiler is not checking for overflows/underflows. This is more gas efficient but it makes code harder to read.
 -[RecollateralizationLib](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L242)
 -[RecollateralizationLib](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L329)
@@ -115,24 +104,24 @@
 -[RToken](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L767)
 -[RToken](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L793)
 
-## G-06: Put less gas consuming requires first
+## G-05: Put less gas consuming requires first
 ###  In this case if a transaction is reverted on first require less gas will be used.
 -[AssetRegistry](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/AssetRegistry.sol#L88-L89)
 -[AssetRegistry](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/AssetRegistry.sol#L111-L112)
 
-## G-07: Private functions which are used only once can be inlined
+## G-06: Private functions which are used only once can be inlined
 ###  Calling private functions costs additional gas this way it will be saved. This might also make it a little bit harder to read the code.
 -[RecollateralizationLib](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L428)
 -[RecollateralizationLib](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/mixins/RecollateralizationLib.sol#L460)
 -[BackingManager](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L154)
 -[BackingManager](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/BackingManager.sol#L248)
 
-## G-08: Use `bytes32` instead of  `string` for strings smaller than 32 bytes
+## G-07: Use `bytes32` instead of  `string` for strings smaller than 32 bytes
 ### EVM workes with `bytes32` more efficently than with `string`s and `bytes`.
 -[Deployer](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L248)
 
-## G-09: Use calldata in cases where parameter variable is not modified
-### accessing parametes from calldata are more gas efficient 
+## G-08: Use calldata in cases where parameter variable is not modified
+### Accessing parameters from calldata are more gas efficient 
 -[Deployer](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L46)
 -[Deployer](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L103)
 -[Deployer](https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Deployer.sol#L104)
