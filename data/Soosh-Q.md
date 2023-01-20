@@ -180,3 +180,39 @@ function setRedemptionRateFloor(uint256 val) public governance {
 	battery.redemptionRateFloor = val;
 }
 ```
+
+## Silent error with `melt()` in `redeem(...)`
+### Details
+In `redeem(...)`,
+```sol
+	// Failure to melt results in a lower redemption price, so we can allow it when paused
+	// solhint-disable-next-line no-empty-blocks
+	try main.furnace().melt() {} catch {}
+```
+`main.furnace().melt()` will call `RToken.melt()`:
+```sol
+    function melt(uint256 amtRToken) external notPausedOrFrozen {
+        _burn(_msgSender(), amtRToken);
+        emit Melted(amtRToken);
+        requireValidBUExchangeRate();
+    }
+```
+The intention behind the `try-catch` as stated by the comment is so that even if `melt()` reverts due to being paused (`notPausedOrFrozen` modifier), it should still allow the user to `redeem(...)` at a lower redemption price.
+
+However, this also means that `requireValidBUExchangeRate()` check is bypassed. If the `requireValidBUExchangeRate()` does not hold true, the external tx is reverted, and execution continues at the empty catch block.
+
+`melt()` can silently fail (furnace does not actually burn any tokens) due to the `try-catch` when redeeming.
+
+Affected:
+https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/RToken.sol#L452
+
+### Impact
+Even if redeeming when not paused, there could be a silent failure to `melt()` resulting in a lower redemption price for the redeemer.
+
+### Recommendations
+```sol
+if (!main.pausedOrFrozen()) {
+	main.furnace().melt()
+}
+```
+This will make it so that `redeem(...)` will revert if `requireValidBUExchangeRate()` does not hold after `melt()`. (should create a `paused()` function to check if paused. Above recommendation is based on existing `pausedOrFrozen()` function).
