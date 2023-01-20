@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "Breeje",
+  "risk": "2",
+  "title": "`payoutRewards` METHOD CANNOT BE CALLED IN PAUSED OR FROZEN STATE",
+  "issueId": 470,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/470"
+}
