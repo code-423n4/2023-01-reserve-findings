@@ -174,3 +174,9 @@ Enclosing it inside unchecked can save gas, overflow/underflow is not possible
 ```
 return (p - delta, p + delta, 0);
 ```
+
+G23. https://github.com/reserve-protocol/protocol/blob/df7ecadc2bae74244ace5e8b39e94bc992903158/contracts/p1/Distributor.sol#L123-L128
+There is no need to create the ``transfer[]`` data structure and this code, we can replace it by the subsequence ``safeTransferFrom()`` to avoid another for-loop and book keeping.
+```
+IERC20Upgradeable(address(erc20)).safeTransferFrom(from, addrTo, transferAmt);
+```
