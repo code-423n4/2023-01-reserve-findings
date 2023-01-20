@@ -32,9 +32,11 @@ initialize() function can be called anybody when the contract is not initialized
 More importantly, if someone else runs this function. Also, there is no 0 address check in the address arguments of the initialize() function, which must be defined.
 
 Add a control that makes initialize() only call the Deployer Contract;
+``` solidity
 if (msg.sender != DEPLOYER_ADDRESS) {
             revert NotDeployer();
 }
+```
 ``` solidity
 contracts\p1\BackingManager.sol
 44:  function init(
@@ -184,51 +186,51 @@ contracts\p1\StRSR.sol
 
 ### [L-3] require() should be used instead of assert()
 ``` solidity
-File: c:\Users\pc\Desktop\23\contracts\plugins\trading\GnosisTrade.sol
+contracts\plugins\trading\GnosisTrade.sol
 63:         assert(status == TradeStatus.PENDING);
-File: c:\Users\pc\Desktop\23\contracts\plugins\trading\GnosisTrade.sol
+contracts\plugins\trading\GnosisTrade.sol
 98:         assert(origin_ != address(0));
-File: c:\Users\pc\Desktop\23\contracts\plugins\trading\GnosisTrade.sol
+contracts\plugins\trading\GnosisTrade.sol
 182:          assert(isAuctionCleared());
-File: c:\Users\pc\Desktop\23\contracts\plugins\assets\RTokenAsset.sol
+contracts\plugins\assets\RTokenAsset.sol
 74:  assert(low <= high);
-File: c:\Users\pc\Desktop\23\contracts\plugins\assets\FiatCollateral.sol
+contracts\plugins\assets\FiatCollateral.sol
 137:        assert(low == 0);
-File: c:\Users\pc\Desktop\23\contracts\plugins\assets\Asset.sol
+contracts\plugins\assets\Asset.sol
 147:         assert(lotLow <= lotHigh);
-File: c:\Users\pc\Desktop\23\contracts\plugins\assets\Asset.sol
+contracts\plugins\assets\Asset.sol
 112:   assert(low <= high);
-File: c:\Users\pc\Desktop\23\contracts\plugins\assets\Asset.sol
+contracts\plugins\assets\Asset.sol
 98:     assert(low == 0);
-File: c:\Users\pc\Desktop\23\contracts\plugins\aave\StaticATokenLM.sol
+contracts\plugins\aave\StaticATokenLM.sol
 345:         assert(amt == amountToWithdraw);
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\Trading.sol
+contracts\p1\mixins\Trading.sol
 114:         assert(address(trades[sell]) == address(0));
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\TradeLib.sol
+contracts\p1\mixins\TradeLib.sol
 170:     assert(keccak256(reason) == UIntOutofBoundsHash);
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\TradeLib.sol
+contracts\p1\mixins\TradeLib.sol
 168:     assert(errorCode == 0x11 || errorCode == 0x12);
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\TradeLib.sol
+contracts\p1\mixins\TradeLib.sol
 108:         assert(
 109:             trade.sellPrice > 0 &&
 110:                 trade.sellPrice < FIX_MAX &&
 111:                 trade.buyPrice > 0 &&
 112:                 trade.buyPrice < FIX_MAX
 113:         );
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\TradeLib.sol
+contracts\p1\mixins\TradeLib.sol
 44:         assert(trade.buyPrice > 0 && trade.buyPrice < FIX_MAX && trade.sellPrice < FIX_MAX);
 45: 
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\RewardableLib.sol
+contracts\p1\mixins\RewardableLib.sol
 102:             assert(erc20.balanceOf(address(this)) >= liabilities[erc20]);
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\RewardableLib.sol
+contracts\p1\mixins\RewardableLib.sol
 78:                 assert(erc20s[i].balanceOf(address(this)) >= liabilities[erc20s[i]]);
-File: c:\Users\pc\Desktop\23\contracts\p1\mixins\RecollateralizationLib.sol
+contracts\p1\mixins\RecollateralizationLib.sol
 110:         assert(doTrade);
-File: c:\Users\pc\Desktop\23\contracts\p1\StRSR.sol
+contracts\p1\StRSR.sol
 696:         assert(totalStakes + amount < type(uint224).max);
-File: c:\Users\pc\Desktop\23\contracts\p1\BasketHandler.sol
+contracts\p1\BasketHandler.sol
 556:             assert(targetIndex < targetsLength);
-File: c:\Users\pc\Desktop\23\contracts\p1\BackingManager.sol
+contracts\p1\BackingManager.sol
 249:         assert(tradesOpen == 0 && !basketHandler.fullyCollateralized());
 ```
 
