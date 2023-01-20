@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "wait",
+  "risk": "2",
+  "title": "Malicious uses can prevente other users from issuing new RTokens by continuously issue and cancel RToken",
+  "issueId": 367,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/367"
+}
