@@ -1,0 +1,8 @@
+{
+  "contest": 203,
+  "handle": "tnevler",
+  "risk": "2",
+  "title": "selfdestruct() will not be available after EIP-4758",
+  "issueId": 360,
+  "issueUrl": "https://github.com/code-423n4/2023-01-reserve-findings/issues/360"
+}
