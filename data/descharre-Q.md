@@ -19,7 +19,7 @@
 |9       |Event is missing indexed fields|3|
 |10      |Using safemath when compiler is ^0.8.0|2|
 |11      |Not using the named return variables in a function|2|
-|8       |Miscellaneous|1|
+|12      |Miscellaneous|1|
 # Details
 ## Low Risk
 ## 1 Other contract addresses can only be set once
