@@ -1,3 +1,15 @@
+## Fit Checkpoint into 1 storage slot
+
+This can be fitted into 1 slot by changing fromBlock to uint32 which should still last long enough
+
+protocol/contracts/p1/StRSRVotes.sol:L22
+```
+    struct Checkpoint {
+        uint48 fromBlock;
+        uint224 val;
+    }
+```
+
 ## Cache variable in memory
 
 basketsNeeded can be cached here
