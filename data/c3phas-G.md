@@ -29,7 +29,7 @@
 
 ## FINDINGS
 NB: Some functions have been truncated where necessary to just show affected parts of the code
-Through out the report some places might be denoted with audit tags to show the actual place affected.
+Throughout the report some places might be denoted with audit tags to show the actual place affected.
 
 ### Using immutable on variables that are only set in the constructor and never after (Gas saved: 4.2k)
 Use immutable if you want to assign a permanent value at construction. Use constants if you already know the permanent value. Both get directly embedded in bytecode, saving SLOAD.
@@ -377,26 +377,29 @@ struct DeploymentParams {
 
 
 ```diff
+
 diff --git a/contracts/interfaces/IDeployer.sol b/contracts/interfaces/IDeployer.sol
-index e2f61fe5..2282bbe2 100644
+index e2f61fe5..d6d3fa29 100644
 --- a/contracts/interfaces/IDeployer.sol
 +++ b/contracts/interfaces/IDeployer.sol
-@@ -20,31 +20,29 @@ struct DeploymentParams {
+@@ -19,32 +19,29 @@ import "./IVersioned.sol";
+ struct DeploymentParams {
      // === Revenue sharing ===
      RevenueShare dist; // revenue sharing splits between RToken and RSR
-     //
-+    uint48 auctionLength; // {s} the length of an auction 6  slot 4
+-    //
++
++    uint48 auctionLength; // {s} the length of an auction 
      // === Trade sizing ===
 -    uint192 minTradeVolume; // {UoA}
 -    uint192 rTokenMaxTradeVolume; // {UoA}
-+    uint192 minTradeVolume; // {UoA} --> 24 slot 1
-+    uint192 rTokenMaxTradeVolume; // {UoA} --> 24
++    uint192 minTradeVolume; // {UoA}
++    uint192 rTokenMaxTradeVolume; // {UoA}
      //
      // === Freezing ===
 -    uint48 shortFreeze; // {s} how long an initial freeze lasts
 -    uint48 longFreeze; // {s} how long each freeze extension lasts
-+    uint48 shortFreeze; // {s} how long an initial freeze lasts --> 6 --> slot 2
-+    uint48 longFreeze; // {s} how long each freeze extension lasts --> 6
++    uint48 shortFreeze; // {s} how long an initial freeze lasts
++    uint48 longFreeze; // {s} how long each freeze extension lasts 
      //
      // === Rewards (Furnace + StRSR) ===
 -    uint192 rewardRatio; // the fraction of available revenues that stRSR holders get each PayPeriod
@@ -411,8 +414,21 @@ index e2f61fe5..2282bbe2 100644
 -    uint192 backingBuffer; // {1} how much extra backing collateral to keep
 -    uint192 maxTradeSlippage; // {1} max slippage acceptable in a trade
 -    //
-+    uint192 rewardRatio; // the fraction of available revenues that stRSR holders get each PayPeriod 24 slot 3
++    uint192 rewardRatio; // the fraction of available revenues that stRSR holders get each PayPeriod 
 +
++    uint48 rewardPeriod; // {s} the atomic unit of rewards, determines # of exponential rounds 
++    uint192 backingBuffer; // {1} how much extra backing collateral to keep 
++    uint192 maxTradeSlippage; // {1} max slippage acceptable in a trade  6
++
++    uint48 tradingDelay; // {s} how long to wait until starting auctions after switching basket 
+     // === RToken ===
+-    uint192 issuanceRate; // {1/block} number of RToken to issue per block / (RToken value)
+-    uint192 scalingRedemptionRate; // {1/hour} max fraction of supply that can be redeemed hourly
+-    uint256 redemptionRateFloor; // {qRTok/hour} the lowest possible hourly redemption limit
++    uint192 issuanceRate; // {1/block} number of RToken to issue per block / (RToken value)
++    uint48 unstakingDelay; // {s} the "thawing time" of staked RSR before withdrawal
++    uint192 scalingRedemptionRate; // {1/hour} max fraction of supply that can be redeemed hourly
++    uint256 redemptionRateFloor; // {qRTok/hour} the lowest possible hourly redemption limit
 ```
 
 
